@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace M4.Infrastructure.Migrations
 {
-    [DbContext(typeof(MyIdentityDbContext))]
+    [DbContext(typeof(UserIdentityDbContext))]
     [Migration("20200827231257_Identity")]
     partial class Identity
     {
