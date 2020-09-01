@@ -1,4 +1,4 @@
-﻿namespace M4.WebApi.Models
+﻿namespace M4.Infrastructure.Models
 {
     public class Urls
     {

@@ -1,6 +1,6 @@
 using M4.Infrastructure.Configurations;
 using M4.Infrastructure.Email;
-using M4.WebApi.Models;
+using M4.Infrastructure.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -36,7 +36,7 @@ namespace M4.WebApi
             services.Configure<Urls>(Configuration.GetSection("Urls"));
             services.Configure<EmailConfiguration>(Configuration.GetSection("EmailConfiguration"));
             services.AddScoped<IEmailSender, EmailSender>();
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
         }
 
