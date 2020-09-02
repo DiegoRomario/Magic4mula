@@ -3,7 +3,7 @@ using MimeKit;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace M4.Infrastructure.Email
+namespace M4.Infrastructure.Services.Email
 {
     public class EmailMessage
     {

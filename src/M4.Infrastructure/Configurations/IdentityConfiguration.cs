@@ -1,6 +1,7 @@
 ﻿using M4.Infrastructure.Configurations.Models;
 using M4.Infrastructure.Data;
-using M4.Infrastructure.Email;
+using M4.Infrastructure.Extensions;
+using M4.Infrastructure.Services.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -30,6 +31,7 @@ namespace M4.Infrastructure.Configurations
                 opt.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
             })
                 .AddRoles<IdentityRole>()
+                .AddErrorDescriber<IdentityMensagensPortugues>()
                 .AddEntityFrameworkStores<UserIdentityDbContext>()
                 .AddDefaultTokenProviders()
                 .AddTokenProvider<EmailConfirmationTokenProvider<IdentityUser>>("emailconfirmation");

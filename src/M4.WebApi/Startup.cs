@@ -1,5 +1,5 @@
 using M4.Infrastructure.Configurations;
-using M4.Infrastructure.Email;
+using M4.Infrastructure.Services.Email;
 using M4.Infrastructure.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

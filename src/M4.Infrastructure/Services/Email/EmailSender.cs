@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace M4.Infrastructure.Email
+namespace M4.Infrastructure.Services.Email
 {
     public class EmailSender : IEmailSender
     {
