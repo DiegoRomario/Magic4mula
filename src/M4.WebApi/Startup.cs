@@ -6,10 +6,8 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using M4.Infrastructure.Services.Http;
 using M4.Infrastructure.Configurations.Models;
-using Microsoft.Extensions.Options;
+using M4.WebApi.Configurations;
 
 namespace M4.WebApi
 {
@@ -35,12 +33,14 @@ namespace M4.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddMemoryCache();
             services.AddSwaggerConfiguration();
             services.AddIdentityConfiguration(Configuration);
             services.Configure<Urls>(Configuration.GetSection("Urls"));
             services.Configure<HttpClients>(Configuration.GetSection("HttpClients"));
             services.Configure<EmailConfiguration>(Configuration.GetSection("EmailConfiguration"));
             services.AddScoped<IEmailSender, EmailSender>();
+            services.AddAutoMapperProfile();
             services.AddHttpClients();
             services.RegistryServices();
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);

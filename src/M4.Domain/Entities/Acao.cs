@@ -3,7 +3,7 @@
     public class Acao : Entity
     {
         private Acao() {}
-        public Acao(string ticker, decimal cotacao, string pL, decimal pVP, decimal pSR, decimal dY, decimal pAtivo, decimal pCapGiro, decimal pEBIT, decimal pAtivoCirculanteLiquido, decimal eVEBIT, decimal eVEBITDA, decimal margemEbit, decimal margemLiquida, decimal liquidezCorrente, decimal rOIC, decimal rOE, decimal liquidez2Meses, decimal patrimonioLiquido, decimal divBrutaPatrimonio, decimal crescimentoReceita5Anos)
+        public Acao(string ticker, decimal cotacao, decimal pL, decimal pVP, decimal pSR, decimal dY, decimal pAtivo, decimal pCapGiro, decimal pEBIT, decimal pAtivoCirculanteLiquido, decimal eVEBIT, decimal eVEBITDA, decimal margemEbit, decimal margemLiquida, decimal liquidezCorrente, decimal rOIC, decimal rOE, decimal liquidez2Meses, decimal patrimonioLiquido, decimal divBrutaPatrimonio, decimal crescimentoReceita5Anos)
         {
             Ticker = ticker;
             Cotacao = cotacao;
@@ -30,7 +30,7 @@
 
         public string Ticker { get; private set; }
         public decimal Cotacao { get; private set; }
-        public string PL { get; private set; }
+        public decimal PL { get; private set; }
         public decimal PVP { get; private set; }
         public decimal PSR { get; private set; }
         public decimal DY { get; private set; }

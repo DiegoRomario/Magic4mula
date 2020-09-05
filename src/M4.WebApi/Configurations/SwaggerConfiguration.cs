@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
 
-namespace M4.Infrastructure.Configurations
+namespace M4.WebApi.Configurations
 {
     public static class SwaggerConfiguration
     {

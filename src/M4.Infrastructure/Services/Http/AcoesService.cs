@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using M4.Domain.Entensions;
 using M4.Domain.Entities;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +8,7 @@ using System.Threading.Tasks;
 
 namespace M4.Infrastructure.Services.Http
 {
-    public static class StringExtensions {
-        public static decimal ToDecimal(this string valor)
-        {
-            decimal valorPadrao;
-            decimal.TryParse(valor, out valorPadrao);
-            return valorPadrao;
-        }
 
-    }
     public class AcoesService : IAcoesService
     {
         private readonly IHttpClientFactory _clientFactory;
@@ -39,7 +32,7 @@ namespace M4.Infrastructure.Services.Http
             {
                 Acao acao = new Acao(ticker: item[0],
                     cotacao: item[1].ToDecimal(),
-                    pL: item[2],
+                    pL: item[2].ToDecimal(),
                     pVP: item[3].ToDecimal(),
                     pSR: item[4].ToDecimal(),
                     dY: item[5].ToDecimal(),
@@ -61,7 +54,7 @@ namespace M4.Infrastructure.Services.Http
 
                 acoes.Add(acao);
             }
-            return await Task.FromResult(acoes);
+            return await Task.FromResult(acoes.OrderBy(x => x.Ticker));
         }
 
         private static List<List<string>> ExtrairDados(HtmlDocument doc)
