@@ -14,11 +14,35 @@ namespace M4.WebApi.Configurations
                 s.SwaggerDoc("v1", new OpenApiInfo()
                 {
                     Title = "Magic4mula API - 🧙",
+                    Version = "1.0",
                     Description = "Filtrando ações de forma simples e eficiente, inspirado pelas melhores literaturas de investimentos.",
                     Contact = new OpenApiContact() { Name = "Diego Romário", Email = "diego.romario@outlook.com" },
-                    License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
+                    License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") },
+                    TermsOfService = new Uri("https://opensource.org/licenses/MIT"),
 
                 });
+
+                s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "O token JWT deve ser informado da seguinte maneira: Bearer {seu token}",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey
+                });
+
+                s.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer",
+                            }
+                        }, new string[] { }
+                    }
+                });
+
             });
 
             return services;

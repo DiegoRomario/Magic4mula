@@ -8,10 +8,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Linq.Dynamic.Core;
+using Microsoft.AspNetCore.Authorization;
 
 namespace M4.WebApi.Controllers
 {
     [Route("api/acoes")]
+    [Authorize]
     public class AcaoController : BaseController
     {
         private readonly IAcoesService _acoesService;
@@ -34,10 +37,11 @@ namespace M4.WebApi.Controllers
         }
 
         [HttpGet("obter-todas-greenblatt-original")]
-        public async Task<ActionResult<IEnumerable<AcaoClassificacao>>> ObterTodasGreenblatt()
+        public async Task<ActionResult<IEnumerable<AcaoClassificacao>>> ObterTodasGreenblatt([FromQuery] AcoesFiltros filtros)
         {
-            IEnumerable<AcaoClassificacao> result = await ObterAcoesModeloGreenblattOriginal();
-            return BaseResponse(result);
+            var acoesGreenblatt = await ObterAcoesModeloGreenblattOriginal();
+            var resultado = FiltrarAcoes(acoesGreenblatt, filtros);
+            return BaseResponse(resultado.AsQueryable().OrderBy($"{filtros.OrderBy} { filtros.Direction}"));
         }
 
         private async Task<IEnumerable<Acao>> ObterAcoesCache()
@@ -75,5 +79,26 @@ namespace M4.WebApi.Controllers
 
             return await Task.FromResult(resultado);
         }
+        private IEnumerable<AcaoClassificacao> FiltrarAcoes(IEnumerable<AcaoClassificacao> acoes, AcoesFiltros filtros)
+        {
+            return acoes.Where(x => Filtros(x, filtros));
+        }
+        Func<AcaoClassificacao, AcoesFiltros, bool> Filtros = delegate (AcaoClassificacao acoes, AcoesFiltros filtros)
+        {
+            return acoes.PL < filtros.PL &&
+                    acoes.PVP < filtros.PVP &&
+                    acoes.EVEBIT < filtros.EVEBIT &&
+                    acoes.EVEBITDA < filtros.EVEBITDA &&
+
+                    acoes.DY > filtros.DY &&
+                    acoes.MargemEbit > filtros.MargemEbit &&
+                    acoes.MargemLiquida > filtros.MargemLiquida &&
+                    acoes.ROIC > filtros.ROIC &&
+                    acoes.ROE > filtros.ROE &&
+                    acoes.Liquidez2Meses > filtros.Liquidez2Meses &&
+                    acoes.PatrimonioLiquido > filtros.PatrimonioLiquido &&
+                    acoes.CrescimentoReceita5Anos > filtros.CrescimentoReceita5Anos;
+        };
+
     }
 }
