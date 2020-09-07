@@ -13,7 +13,7 @@ namespace M4.WebApi
 {
     public class Startup
     {
-        public IConfiguration Configuration { get; }
+        public IConfiguration _configuration { get; }
 
         public Startup(IHostEnvironment hostEnvironment)
         {
@@ -28,22 +28,24 @@ namespace M4.WebApi
                 builder.AddUserSecrets(typeof(Startup).Assembly, true, true);
             }
 
-            Configuration = builder.Build();
+            _configuration = builder.Build();
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMemoryCache();
+            services.AddCustomHealthChecks(_configuration);
             services.AddSwaggerConfiguration();
-            services.AddIdentityConfiguration(Configuration);
-            services.Configure<Urls>(Configuration.GetSection("Urls"));
-            services.Configure<HttpClients>(Configuration.GetSection("HttpClients"));
-            services.Configure<EmailConfiguration>(Configuration.GetSection("EmailConfiguration"));
+            services.AddIdentityConfiguration(_configuration);
+            services.Configure<Urls>(_configuration.GetSection("Urls"));
+            services.Configure<HttpClients>(_configuration.GetSection("HttpClients"));
+            services.Configure<EmailConfiguration>(_configuration.GetSection("EmailConfiguration"));
             services.AddScoped<IEmailSender, EmailSender>();
             services.AddAutoMapperProfile();
             services.AddHttpClients();
             services.RegistryServices();
             services.AddControllers().AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+
 
         }
 
@@ -53,16 +55,18 @@ namespace M4.WebApi
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            app.UseCustomHealthChecks();
             app.UseSwaggerConfigurations();
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
+            
         }
     }
 }

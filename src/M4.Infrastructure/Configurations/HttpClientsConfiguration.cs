@@ -5,7 +5,7 @@ using System;
 
 namespace M4.Infrastructure.Configurations
 {
-    public static class HttpClientsConfigurations
+    public static class HttpClientsConfiguration
     {
         public static IServiceCollection AddHttpClients(this IServiceCollection services )
         {
