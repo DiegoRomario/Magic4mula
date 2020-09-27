@@ -1,5 +1,5 @@
 ﻿using M4.Infrastructure.Configurations.Models;
-using M4.Infrastructure.Data;
+using M4.Infrastructure.Data.Identity;
 using M4.Infrastructure.Extensions;
 using M4.Infrastructure.Services.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -11,7 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
 
-namespace M4.Infrastructure.Configurations
+namespace M4.WebApi.Configurations
 {
     public static class IdentityConfiguration
     {
@@ -21,20 +21,22 @@ namespace M4.Infrastructure.Configurations
             options.UseSqlServer(configuration.GetConnectionString("M4Connection")));
 
 
-            services.AddIdentity<IdentityUser, IdentityRole>(opt =>
+            services.AddIdentity<UserIdentity, IdentityRole>(opt =>
             {
                 opt.Password.RequiredLength = 8;
-                opt.Password.RequireDigit = true;
-                opt.Password.RequireUppercase = true;
-                opt.User.RequireUniqueEmail = true;
+                opt.User.RequireUniqueEmail = false;
                 opt.SignIn.RequireConfirmedEmail = true;
+                opt.Password.RequireDigit = false;
+                opt.Password.RequireLowercase = false;
+                opt.Password.RequireUppercase = false;
+                opt.Password.RequireNonAlphanumeric = false;
                 opt.Tokens.EmailConfirmationTokenProvider = "emailconfirmation";
             })
                 .AddRoles<IdentityRole>()
                 .AddErrorDescriber<IdentityMensagensPortugues>()
                 .AddEntityFrameworkStores<UserIdentityDbContext>()
                 .AddDefaultTokenProviders()
-                .AddTokenProvider<EmailConfirmationTokenProvider<IdentityUser>>("emailconfirmation");
+                .AddTokenProvider<EmailConfirmationTokenProvider<UserIdentity>>("emailconfirmation");
 
             services.Configure<DataProtectionTokenProviderOptions>(opt =>
                opt.TokenLifespan = TimeSpan.FromHours(2));

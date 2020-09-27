@@ -25,7 +25,7 @@ namespace M4.Infrastructure.Services.HealthChecks
                     await connection.OpenAsync(cancellationToken);
 
                     var command = connection.CreateCommand();
-                    command.CommandText = "SELECT TOP 1 1 FROM ASPNETUSERS";
+                    command.CommandText = "SELECT TOP 1 1 FROM USERIDENTITY";
                     return Convert.ToInt32(await command.ExecuteScalarAsync(cancellationToken)) > 0 ? HealthCheckResult.Healthy() : HealthCheckResult.Unhealthy();
                 }
             }

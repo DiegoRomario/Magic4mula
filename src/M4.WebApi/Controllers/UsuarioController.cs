@@ -15,20 +15,21 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
+using M4.Infrastructure.Data.Identity;
 
 namespace M4.WebApi.Controllers
 {
     [Route("api/usuario")]
     public class UsuarioController : BaseController
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<UserIdentity> _signInManager;
+        private readonly UserManager<UserIdentity> _userManager;
         private readonly IEmailSender _emailSender;
         private readonly Urls _uRLs;
         private readonly AppSettings _appSettings;
 
-        public UsuarioController(SignInManager<IdentityUser> signInManager,
-            UserManager<IdentityUser> userManager,
+        public UsuarioController(SignInManager<UserIdentity> signInManager,
+            UserManager<UserIdentity> userManager,
             IEmailSender emailSender, IOptions<Urls> URLs, IOptions<AppSettings> appSettings)
         {
             _signInManager = signInManager;
@@ -42,11 +43,13 @@ namespace M4.WebApi.Controllers
         {
             if (!ModelState.IsValid) return BaseResponse(ModelState);
 
-            IdentityUser usuario = new IdentityUser
+            UserIdentity usuario = new UserIdentity
             {
                 UserName = usuarioCadastro.Email,
                 Email = usuarioCadastro.Email,
-                EmailConfirmed = false
+                EmailConfirmed = false,
+                Name = usuarioCadastro.Nome,
+                LastName = usuarioCadastro.Sobrenome
             };
 
             IdentityResult result = await _userManager.CreateAsync(usuario, usuarioCadastro.Senha);
@@ -78,10 +81,10 @@ namespace M4.WebApi.Controllers
         [HttpGet("confirmar-email")]
         public async Task<ActionResult> ConfirmarEmail([FromQuery] string email, [FromQuery] string token)
         {
-            IdentityUser usuario = await _userManager.FindByEmailAsync(email);
+            UserIdentity usuario = await _userManager.FindByEmailAsync(email);
             if (usuario == null) return BaseResponse("Usuário não encontrado", statusCodeErro: HttpStatusCode.NotFound);
 
-            IdentityResult result = await _userManager.ConfirmEmailAsync(usuario, token);
+            var result = await _userManager.ConfirmEmailAsync(usuario, token);
             if (result.Succeeded)
                 return BaseResponse("Cadastro confirmado com sucesso.");
 
@@ -117,7 +120,7 @@ namespace M4.WebApi.Controllers
         public async Task<ActionResult> SolicitarNovaSenha(UsuarioSolicitacaoSenha usuarioSolicitacaoSenha)
         {
             if (!ModelState.IsValid) return BaseResponse(ModelState);
-            IdentityUser usuario = await _userManager.FindByEmailAsync(usuarioSolicitacaoSenha.Email);
+            UserIdentity usuario = await _userManager.FindByEmailAsync(usuarioSolicitacaoSenha.Email);
             if (usuario == null) return BaseResponse("Usuário não encontrado", statusCodeErro: HttpStatusCode.NotFound);
 
             try
@@ -142,11 +145,11 @@ namespace M4.WebApi.Controllers
         {
             if (!ModelState.IsValid) return BaseResponse(ModelState);
 
-            IdentityUser usuario = await _userManager.FindByEmailAsync(usuarioAlteracaoSenha.Email);
+            UserIdentity usuario = await _userManager.FindByEmailAsync(usuarioAlteracaoSenha.Email);
             if (usuario == null) return BaseResponse("Usuário não encontrado", statusCodeErro: HttpStatusCode.NotFound);
 
             string token = HttpUtility.UrlDecode(usuarioAlteracaoSenha.Token);
-            IdentityResult result = await _userManager.ResetPasswordAsync(usuario, token, usuarioAlteracaoSenha.Senha);
+            var result = await _userManager.ResetPasswordAsync(usuario, token, usuarioAlteracaoSenha.Senha);
             if (!result.Succeeded)
             {
                 foreach (var error in result.Errors)
@@ -169,7 +172,7 @@ namespace M4.WebApi.Controllers
             return ObterRespostaToken(encodedToken, usuario, claims);
         }
 
-        private async Task<ClaimsIdentity> ObterClaimsUsuario(ICollection<Claim> claims, IdentityUser user)
+        private async Task<ClaimsIdentity> ObterClaimsUsuario(ICollection<Claim> claims, UserIdentity user)
         {
             var userRoles = await _userManager.GetRolesAsync(user);
             claims.Add(new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
@@ -198,7 +201,7 @@ namespace M4.WebApi.Controllers
             return tokenHandler.WriteToken(token);
         }
 
-        private UsuarioRespostaLogin ObterRespostaToken(string encodedToken, IdentityUser user, IEnumerable<Claim> claims)
+        private UsuarioRespostaLogin ObterRespostaToken(string encodedToken, UserIdentity user, IEnumerable<Claim> claims)
         {
             return new UsuarioRespostaLogin
             {

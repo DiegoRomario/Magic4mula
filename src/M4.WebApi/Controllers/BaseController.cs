@@ -17,9 +17,21 @@ namespace M4.WebApi.Controllers
 
             return StatusCode((int)statusCodeErro, new ValidationProblemDetails(new Dictionary<string, string[]>
             {
-                {"Mensagens", Erros.ToArray() }
+                {"messages", Erros.ToArray() }
             }));
         }
+
+        protected ActionResult BaseResponse(string message, HttpStatusCode statusCodeSuccess = HttpStatusCode.OK, HttpStatusCode statusCodeErro = HttpStatusCode.BadRequest)
+        {
+            if (OperacaoValida()) return StatusCode((int)statusCodeSuccess, new { message});
+
+            return StatusCode((int)statusCodeErro, new ValidationProblemDetails(new Dictionary<string, string[]>
+            {
+                {"messages", Erros.ToArray() }
+            }));
+        }
+
+
 
         protected ActionResult BaseResponse(ModelStateDictionary modelState)
         {

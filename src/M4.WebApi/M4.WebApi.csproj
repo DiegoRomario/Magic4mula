@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UserSecretsId>7e5edf17-ab1b-4df4-8deb-31e15bd30fab</UserSecretsId>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <GenerateTargetFrameworkAttribute>false</GenerateTargetFrameworkAttribute>
   </PropertyGroup>
 
   <ItemGroup>
@@ -16,6 +18,4 @@
   <ItemGroup>
     <ProjectReference Include="..\M4.Infrastructure\M4.Infrastructure.csproj" />
   </ItemGroup>
-
-
 </Project>
