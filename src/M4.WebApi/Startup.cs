@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using M4.Infrastructure.Configurations.Models;
 using M4.WebApi.Configurations;
+using Microsoft.AspNetCore.Mvc;
 
 namespace M4.WebApi
 {
@@ -33,6 +34,18 @@ namespace M4.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options => options.AddPolicy("ApiCorsPolicy", build =>
+            {
+                build.WithOrigins("*")
+                     .AllowAnyMethod()
+                     .AllowAnyHeader();
+            }));
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.SuppressModelStateInvalidFilter = true;
+            });
+
             services.AddMemoryCache();
             services.AddCustomHealthChecks(_configuration);
             services.AddSwaggerConfiguration();
@@ -55,18 +68,19 @@ namespace M4.WebApi
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseCors("ApiCorsPolicy");
+            app.UseHttpsRedirection();
+            app.UseAuthentication();
             app.UseCustomHealthChecks();
             app.UseSwaggerConfigurations();
-            app.UseHttpsRedirection();
             app.UseRouting();
-            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-            
+
         }
     }
 }

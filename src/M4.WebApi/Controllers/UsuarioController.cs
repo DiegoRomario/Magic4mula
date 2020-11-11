@@ -63,7 +63,7 @@ namespace M4.WebApi.Controllers
                     string urlConfirmacao = string.Format(_uRLs.ConfirmacaoEmail, usuario.Email, token);
                     EmailMessage message = new EmailMessage(new string[] { usuario.Email }, "Confirmação de e-mail", urlConfirmacao, null);
                     await _emailSender.SendEmailAsync(message);
-                    return BaseResponse("Um e-mail foi enviado para confirmação do cadastro do usuário.");
+                    return BaseResponse("Usuário cadastrado com sucesso! Um e-mail foi enviado para confirmação do cadastro.");
                 }
                 catch (Exception ex)
                 {
@@ -78,16 +78,15 @@ namespace M4.WebApi.Controllers
 
             return BaseResponse();
         }
-        [HttpGet("confirmar-email")]
-        public async Task<ActionResult> ConfirmarEmail([FromQuery] string email, [FromQuery] string token)
+        [HttpPost("confirmar-email")]
+        public async Task<ActionResult> ConfirmarEmail(UsuarioConfirmacaoEmail confirmacao)
         {
-            UserIdentity usuario = await _userManager.FindByEmailAsync(email);
+            UserIdentity usuario = await _userManager.FindByEmailAsync(confirmacao.Email);
             if (usuario == null) return BaseResponse("Usuário não encontrado", statusCodeErro: HttpStatusCode.NotFound);
 
-            var result = await _userManager.ConfirmEmailAsync(usuario, token);
+            var result = await _userManager.ConfirmEmailAsync(usuario, confirmacao.Token);
             if (result.Succeeded)
-                return BaseResponse("Cadastro confirmado com sucesso.");
-
+                return BaseResponse("E-mail confirmado com sucesso.");
 
             foreach (var error in result.Errors)
                 AdicionarErro(error.Description);
@@ -209,6 +208,7 @@ namespace M4.WebApi.Controllers
                 ExpiresIn = TimeSpan.FromHours(_appSettings.ExpirationTimeInHours).TotalSeconds,
                 Id = user.Id,
                 Email = user.Email,
+                Nome = user.Name,
                 Claims = claims.Select(c => new UsuarioClaim { Type = c.Type, Value = c.Value })
             };
         }

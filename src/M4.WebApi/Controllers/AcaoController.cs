@@ -36,7 +36,7 @@ namespace M4.WebApi.Controllers
             return BaseResponse(result);
         }
 
-        [HttpGet("obter-todas-greenblatt-original")]
+        [HttpGet("obter-todas-m4")]
         public async Task<ActionResult<IEnumerable<AcaoClassificacao>>> ObterTodasGreenblatt([FromQuery] AcoesFiltros filtros)
         {
             var acoesGreenblatt = await ObterAcoesModeloGreenblattOriginal();
@@ -48,7 +48,7 @@ namespace M4.WebApi.Controllers
         {
             IEnumerable<Acao> acoes = await _cache.GetOrCreateAsync(_TODASACOES, async func =>
             {
-                func.SetAbsoluteExpiration(TimeSpan.FromMinutes(1));
+                func.SetAbsoluteExpiration(TimeSpan.FromHours(12));
                 return await _acoesService.ObterAcoes();
             });
 
