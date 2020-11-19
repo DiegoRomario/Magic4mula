@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using M4.WebApi.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
@@ -9,6 +10,7 @@ namespace M4.WebApi.Configurations
     {
         public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)
         {
+
             services.AddSwaggerGen(s =>
             {
                 s.SwaggerDoc("v1", new OpenApiInfo()
@@ -21,7 +23,6 @@ namespace M4.WebApi.Configurations
                     TermsOfService = new Uri("https://opensource.org/licenses/MIT"),
 
                 });
-
                 s.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "O token JWT deve ser informado da seguinte maneira: Bearer {seu token}",
@@ -44,6 +45,7 @@ namespace M4.WebApi.Configurations
                 });
 
             });
+            services.AddSwaggerGenNewtonsoftSupport();
 
             return services;
         }
