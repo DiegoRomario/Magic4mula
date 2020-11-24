@@ -7,7 +7,7 @@ namespace M4.WebApi.Models
         private const int VALOR_MAXIMO = 99999;
         private const int VALOR_MINIMO = VALOR_MAXIMO * -1;
 
-        public Direction Direction { get; set; }
+        public EDirection Direction { get; set; }
         public string OrderBy { get; set; } = "Pontuacao";
         // menor
         public decimal PL { get; set; } = VALOR_MAXIMO;
@@ -23,13 +23,6 @@ namespace M4.WebApi.Models
         public decimal Liquidez2Meses { get; set; } = VALOR_MINIMO;
         public decimal PatrimonioLiquido { get; set; } = VALOR_MINIMO;
         public decimal CrescimentoReceita5Anos { get; set; } = VALOR_MINIMO;
-    }
-
-    //[DefaultValue(ASC)]
-    public enum Direction
-    {
-        ASC,
-        DESC
     }
 
 }
