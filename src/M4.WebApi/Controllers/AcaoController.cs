@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Authorization;
 namespace M4.WebApi.Controllers
 {
     [Route("api/acoes")]
-    //[Authorize]
     public class AcaoController : BaseController
     {
         private readonly IAcoesService _acoesService;
@@ -30,6 +29,7 @@ namespace M4.WebApi.Controllers
         }
 
         [HttpGet("obter-todas")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<Acao>>> ObterTodas()
         {
             IEnumerable<Acao> result = await ObterAcoesCache();
@@ -37,10 +37,18 @@ namespace M4.WebApi.Controllers
         }
 
         [HttpGet("obter-todas-m4")]
-        public async Task<ActionResult<IEnumerable<AcaoClassificacao>>> ObterTodasGreenblatt([FromQuery] ECriterio criterio)
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<AcaoClassificacao>>> ObterTodasM4([FromQuery] ECriterio criterio)
         {
             var acoes = await ObterAcoesClassificadas(criterio);
             return BaseResponse(acoes);
+        }
+
+        [HttpGet("obter-5-m4")]
+        public async Task<ActionResult<IEnumerable<AcaoClassificacao>>> Obter5M4([FromQuery] ECriterio criterio)
+        {
+            var acoes = await ObterAcoesClassificadas(criterio);
+            return BaseResponse(acoes.Take(5));
         }
 
         private async Task<IEnumerable<Acao>> ObterAcoesCache()
@@ -89,7 +97,6 @@ namespace M4.WebApi.Controllers
 
             return await Task.FromResult(resultado);
         }
-
         private static void RankearPorRentabilidade(int pontuacao, AcaoClassificacao acao, ECriterio criterio)
         {
             if (criterio == ECriterio.PL_ROE)
@@ -104,7 +111,6 @@ namespace M4.WebApi.Controllers
             }
 
         }
-
         private static void RankearPorPreco(int pontuacao, AcaoClassificacao acao, ECriterio criterio)
         {
             if (criterio == ECriterio.PL_ROE)
@@ -119,7 +125,6 @@ namespace M4.WebApi.Controllers
             }
 
         }
-
         private static IEnumerable<AcaoClassificacao> ClassificarPorRentabilidade(ECriterio criterio, IEnumerable<AcaoClassificacao> acoesClassificadas)
         {
             if (criterio == ECriterio.PL_ROE)
@@ -128,7 +133,6 @@ namespace M4.WebApi.Controllers
                 acoesClassificadas = acoesClassificadas.Where(a => a.ROIC > 0).OrderBy(a => a.ROIC);
             return acoesClassificadas;
         }
-
         private static IEnumerable<AcaoClassificacao> ClassificarPorPreco(ECriterio criterio, IEnumerable<AcaoClassificacao> acoesClassificadas)
         {
             if (criterio == ECriterio.PL_ROE)
@@ -137,7 +141,6 @@ namespace M4.WebApi.Controllers
                 acoesClassificadas = acoesClassificadas.Where(a => a.EVEBIT > 0).OrderByDescending(a => a.EVEBIT);
             return acoesClassificadas;
         }
-
         private IEnumerable<AcaoClassificacao> FiltrarAcoes(IEnumerable<AcaoClassificacao> acoes, AcoesFiltros filtros)
         {
             return acoes.Where(x => Filtros(x, filtros));
