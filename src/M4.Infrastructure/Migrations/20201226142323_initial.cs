@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace M4.Infrastructure.Migrations
 {
-    public partial class Identity : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -24,7 +24,7 @@ namespace M4.Infrastructure.Migrations
             migrationBuilder.CreateTable(
                 name: "UserIdentity",
                 columns: table => new
-                {
+                { 
                     Id = table.Column<string>(nullable: false),
                     UserName = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
