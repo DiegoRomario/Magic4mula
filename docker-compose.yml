@@ -1,0 +1,13 @@
+version: "3"
+services:
+  m4-webapi:
+    image: diegoromario/m4-webapi:latest
+    container_name: m4-webapi
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7000:7000"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://*:7000
