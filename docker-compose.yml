@@ -11,3 +11,15 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://*:7000
+
+  m4-sqlserver:
+    image: diegoromario/m4-sqlserver
+    container_name: m4-sqlserver
+    build:
+      context: .
+      dockerfile: DockerfileSQL
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "mudar@123"
+      ACCEPT_EULA: "Y"
