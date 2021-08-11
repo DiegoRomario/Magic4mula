@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 
 namespace M4.Infrastructure.Services.Http
 {
-
     public class AcoesService : IAcoesService
     {
         private readonly IHttpClientFactory _clientFactory;

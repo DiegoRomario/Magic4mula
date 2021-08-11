@@ -1,6 +1,4 @@
 ﻿using M4.Domain.Entities;
-
-
 namespace M4.WebApi.Models
 {
     public class AcaoClassificacao : Acao

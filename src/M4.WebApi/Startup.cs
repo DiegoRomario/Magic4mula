@@ -79,7 +79,6 @@ namespace M4.WebApi
             app.UseSwaggerConfigurations();
             app.UseRouting();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

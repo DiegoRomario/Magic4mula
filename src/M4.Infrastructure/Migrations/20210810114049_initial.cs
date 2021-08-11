@@ -24,7 +24,7 @@ namespace M4.Infrastructure.Migrations
             migrationBuilder.CreateTable(
                 name: "UserIdentity",
                 columns: table => new
-                { 
+                {
                     Id = table.Column<string>(nullable: false),
                     UserName = table.Column<string>(maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(maxLength: 256, nullable: true),
