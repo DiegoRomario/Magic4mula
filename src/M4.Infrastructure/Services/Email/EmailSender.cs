@@ -1,7 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using Microsoft.Extensions.Options;
 using MimeKit;
-using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -69,9 +68,9 @@ namespace M4.Infrastructure.Services.Email
                     client.Authenticate(_emailConfig.UserName, _emailConfig.Password);
                     client.Send(mailMessage);
                 }
-                catch (Exception ex)
+                catch
                 {
-                    throw ex;
+                    throw;
                 }
                 finally
                 {
@@ -93,9 +92,9 @@ namespace M4.Infrastructure.Services.Email
 
                     await client.SendAsync(mailMessage);
                 }
-                catch (Exception ex)
+                catch
                 {
-                    throw ex;
+                    throw;
                 }
                 finally
                 {
