@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M4.Domain", "src\M4.Domain\M4.Domain.csproj", "{22AB4C4F-41DD-42A4-8A48-6BE3D18F42E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M4.Domain", "src\M4.Domain\M4.Domain.csproj", "{22AB4C4F-41DD-42A4-8A48-6BE3D18F42E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M4.Infrastructure", "src\M4.Infrastructure\M4.Infrastructure.csproj", "{72CC5C43-8E47-4B77-AB24-156B9CEE0CB4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M4.Infrastructure", "src\M4.Infrastructure\M4.Infrastructure.csproj", "{72CC5C43-8E47-4B77-AB24-156B9CEE0CB4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M4.WebApi", "src\M4.WebApi\M4.WebApi.csproj", "{65725914-F27B-4D2D-BE31-EF96A79BA888}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M4.WebApi", "src\M4.WebApi\M4.WebApi.csproj", "{65725914-F27B-4D2D-BE31-EF96A79BA888}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M4.WebApi.Tests", "tests\M4.WebApi.Tests\M4.WebApi.Tests.csproj", "{5E96DCAD-FB3A-412F-AA4B-F75F3D5340A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{65725914-F27B-4D2D-BE31-EF96A79BA888}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{65725914-F27B-4D2D-BE31-EF96A79BA888}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{65725914-F27B-4D2D-BE31-EF96A79BA888}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E96DCAD-FB3A-412F-AA4B-F75F3D5340A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E96DCAD-FB3A-412F-AA4B-F75F3D5340A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E96DCAD-FB3A-412F-AA4B-F75F3D5340A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E96DCAD-FB3A-412F-AA4B-F75F3D5340A8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
