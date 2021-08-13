@@ -9,7 +9,7 @@ using Microsoft.Extensions.Hosting;
 using M4.Infrastructure.Configurations.Models;
 using M4.WebApi.Configurations;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Converters;
+using System.Text.Json.Serialization;
 
 namespace M4.WebApi
 {
@@ -58,11 +58,7 @@ namespace M4.WebApi
             services.AddAutoMapperProfile();
             services.AddHttpClients();
             services.RegistryServices();
-            services.AddControllers().AddNewtonsoftJson(options => {
-                options.SerializerSettings.Converters.Add(new StringEnumConverter()); options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-            }); ;
-
-
+            services.AddControllers().AddJsonOptions(option => option.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
         }
 
