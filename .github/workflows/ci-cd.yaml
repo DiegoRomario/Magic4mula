@@ -21,6 +21,9 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
+      - name: Cleaning dependencies 🧹
+        run: dotnet restore
+
       - name: Restore dependencies 🎡
         run: dotnet restore
       

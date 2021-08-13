@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using M4.WebApi.Mappings;
+﻿using M4.WebApi.Mappings;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace M4.WebApi.Configurations
