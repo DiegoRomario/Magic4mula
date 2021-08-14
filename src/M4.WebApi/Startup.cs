@@ -48,7 +48,6 @@ namespace M4.WebApi
             });
 
             services.AddMemoryCache();
-            services.AddCustomHealthChecks(_configuration);
             services.AddSwaggerConfiguration();
             services.AddIdentityConfiguration(_configuration);
             services.Configure<Urls>(_configuration.GetSection("Urls"));
@@ -71,7 +70,6 @@ namespace M4.WebApi
             app.UseCors("ApiCorsPolicy");
             app.UseHttpsRedirection();
             app.UseAuthentication();
-            app.UseCustomHealthChecks();
             app.UseSwaggerConfigurations();
             app.UseRouting();
             app.UseAuthorization();
