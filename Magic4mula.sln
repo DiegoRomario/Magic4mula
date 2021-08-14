@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M4.Infrastructure", "src\M4
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M4.WebApi", "src\M4.WebApi\M4.WebApi.csproj", "{65725914-F27B-4D2D-BE31-EF96A79BA888}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M4.WebApi.Tests", "tests\M4.WebApi.Tests\M4.WebApi.Tests.csproj", "{5E96DCAD-FB3A-412F-AA4B-F75F3D5340A8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M4.WebApi.Tests", "tests\M4.WebApi.Tests\M4.WebApi.Tests.csproj", "{5E96DCAD-FB3A-412F-AA4B-F75F3D5340A8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
