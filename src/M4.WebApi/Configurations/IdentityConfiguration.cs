@@ -18,7 +18,7 @@ namespace M4.WebApi.Configurations
         public static IServiceCollection AddIdentityConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<UserIdentityDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("M4Connection")));
+            options.UseInMemoryDatabase(configuration.GetConnectionString("M4Connection")));
 
 
             services.AddIdentity<UserIdentity, IdentityRole>(opt =>

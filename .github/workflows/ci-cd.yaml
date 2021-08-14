@@ -1,0 +1,41 @@
+name: CI/CD
+
+on:
+  push:
+    branches:
+      - development
+
+env:
+  DOTNET_VERSION: '3.1.x'
+  AZURE_WEBAPP_NAME: magicformula
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code 🔎
+        uses: actions/checkout@v2
+      
+      - name: Setup .NET Core 3.1 🔧
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies 🎡
+        run: dotnet restore
+      
+      - name: Build app 🚀
+        run: dotnet build -c Release
+
+      - name: Run unit tests 🧪
+        run: dotnet test -c Release --no-build
+
+      - name: Publish app 📰
+        run: dotnet publish -c Release -o ./out
+
+      - name: Deploy to Azure Web Apps 🚢
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_SECRET }}
+          package: ./out
