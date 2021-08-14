@@ -4,12 +4,12 @@ using M4.Infrastructure.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using M4.Infrastructure.Configurations.Models;
 using M4.WebApi.Configurations;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json.Serialization;
-using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json.Converters;
 
 namespace M4.WebApi
 {
@@ -48,6 +48,7 @@ namespace M4.WebApi
             });
 
             services.AddMemoryCache();
+            services.AddCustomHealthChecks(_configuration);
             services.AddSwaggerConfiguration();
             services.AddIdentityConfiguration(_configuration);
             services.Configure<Urls>(_configuration.GetSection("Urls"));
@@ -57,7 +58,11 @@ namespace M4.WebApi
             services.AddAutoMapperProfile();
             services.AddHttpClients();
             services.RegistryServices();
-            services.AddControllers().AddJsonOptions(option => option.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
+            services.AddControllers().AddNewtonsoftJson(options => {
+                options.SerializerSettings.Converters.Add(new StringEnumConverter()); options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            }); ;
+
+
 
         }
 
@@ -70,9 +75,11 @@ namespace M4.WebApi
             app.UseCors("ApiCorsPolicy");
             app.UseHttpsRedirection();
             app.UseAuthentication();
+            app.UseCustomHealthChecks();
             app.UseSwaggerConfigurations();
             app.UseRouting();
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

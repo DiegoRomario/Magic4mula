@@ -31,6 +31,8 @@ namespace M4.WebApi.Controllers
             }));
         }
 
+
+
         protected ActionResult BaseResponse(ModelStateDictionary modelState)
         {
             var erros = modelState.Values.SelectMany(e => e.Errors);

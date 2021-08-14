@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using M4.WebApi.Models;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
@@ -44,7 +45,7 @@ namespace M4.WebApi.Configurations
                 });
 
             });
-            services.AddSwaggerGen();
+            services.AddSwaggerGenNewtonsoftSupport();
 
             return services;
         }

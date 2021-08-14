@@ -12,6 +12,7 @@ COPY ["src/M4.Domain/M4.Domain.csproj", "src/M4.Domain/"]
 RUN dotnet restore "src/M4.WebApi/M4.WebApi.csproj"
 RUN dotnet restore "src/M4.Infrastructure/M4.Infrastructure.csproj"
 RUN dotnet restore "src/M4.Domain/M4.Domain.csproj"
+RUN add-migrations initial -Context "src/M4.Domain/M4.Domain.cspro
 COPY . .
 WORKDIR "/src/src/M4.WebApi"
 RUN dotnet build "M4.WebApi.csproj" -c Release -o /app/build

@@ -63,7 +63,7 @@ namespace M4.WebApi.Configurations
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettings.Secret)),
                     ValidateIssuer = true,
                     ValidAudience = appSettings.Audience,
-                    ValidIssuer = appSettings.Issuer,
+                    ValidIssuer = appSettings.Issuer    ,
                 };
             });
 

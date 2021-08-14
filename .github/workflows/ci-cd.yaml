@@ -3,10 +3,10 @@ name: CI/CD
 on:
   push:
     branches:
-      - master
+      - development
 
 env:
-  DOTNET_VERSION: 5.0.100-rc.2.20479.15
+  DOTNET_VERSION: '3.1.x'
   AZURE_WEBAPP_NAME: magicformula
 
 jobs:
@@ -16,19 +16,16 @@ jobs:
       - name: Checkout code 🔎
         uses: actions/checkout@v2
       
-      - name: Setup .NET 5 🔧
+      - name: Setup .NET Core 3.1 🔧
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
-
-      - name: Cleaning dependencies 🧹
-        run: dotnet restore
 
       - name: Restore dependencies 🎡
         run: dotnet restore
       
       - name: Build app 🚀
-        run: dotnet build -c Release --no-restore
+        run: dotnet build -c Release
 
       - name: Run unit tests 🧪
         run: dotnet test -c Release --no-build

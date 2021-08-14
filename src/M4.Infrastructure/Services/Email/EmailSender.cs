@@ -92,7 +92,7 @@ namespace M4.Infrastructure.Services.Email
 
                     await client.SendAsync(mailMessage);
                 }
-                catch
+                catch 
                 {
                     throw;
                 }
