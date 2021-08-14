@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  DOTNET_VERSION: '5.0.x'
+  DOTNET_VERSION: 5.0.100-rc.2.20479.15
   AZURE_WEBAPP_NAME: magicformula
 
 jobs:
