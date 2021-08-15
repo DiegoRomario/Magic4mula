@@ -7,7 +7,7 @@ on:
 
 env:
   DOTNET_VERSION: '3.1.x'
-  AZURE_WEBAPP_NAME: magicformula
+  AZURE_WEBAPP_NAME: magicformula-webapi
 
 jobs:
   build:
