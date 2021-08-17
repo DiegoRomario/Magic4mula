@@ -17,20 +17,9 @@ namespace M4.WebApi
     {
         public IConfiguration _configuration { get; }
 
-        public Startup(IHostEnvironment hostEnvironment)
+        public Startup(IConfiguration configuration)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(hostEnvironment.ContentRootPath)
-                .AddJsonFile("appsettings.json", true, true)
-                .AddJsonFile($"appsettings.{hostEnvironment.EnvironmentName}.json", true, true)
-                .AddEnvironmentVariables();
-
-            if (hostEnvironment.IsDevelopment())
-            {
-                builder.AddUserSecrets(typeof(Startup).Assembly, true, true);
-            }
-
-            _configuration = builder.Build();
+            _configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -46,7 +35,6 @@ namespace M4.WebApi
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
-
             services.AddMemoryCache();
             services.AddCustomHealthChecks(_configuration);
             services.AddSwaggerConfiguration();
@@ -79,7 +67,6 @@ namespace M4.WebApi
             app.UseSwaggerConfigurations();
             app.UseRouting();
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
