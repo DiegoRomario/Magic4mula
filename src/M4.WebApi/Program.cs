@@ -28,7 +28,7 @@ namespace M4.WebApi
                     options.Connect(settings["ConnectionStrings:AppConfig"])
                         .ConfigureRefresh(refresh =>
                         {
-                            refresh.Register("ValorTesteConfig");
+                            refresh.Register("Urls:ConfirmacaoEmail");
                         });
                 });
             })
