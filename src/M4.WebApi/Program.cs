@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.UserSecrets;
-using System.IO;
-
+using System;
 
 namespace M4.WebApi
 {
@@ -23,12 +21,17 @@ namespace M4.WebApi
                     config.AddUserSecrets<Program>();
                 }
                 var settings = config.Build();
+                var environment = hostingContext.HostingEnvironment.EnvironmentName;
                 config.AddAzureAppConfiguration(options =>
                 {
                     options.Connect(settings["ConnectionStrings:AppConfig"])
                         .ConfigureRefresh(refresh =>
                         {
-                            refresh.Register("ValorTesteConfig");
+                            refresh.Register("Urls:ConfirmacaoEmail", true);
+                        }).UseFeatureFlags(opt =>
+                        {
+                            opt.Label = environment;
+                            opt.CacheExpirationInterval = TimeSpan.FromSeconds(5);
                         });
                 });
             })
