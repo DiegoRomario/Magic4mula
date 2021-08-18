@@ -32,23 +32,23 @@ namespace M4.WebApi.Controllers
 
         [HttpGet("obter-todas")]
         [Authorize]
-        [FeatureGate("todas-acoes")]
+        [FeatureGate("obter-todas-acoes")]
         public async Task<ActionResult<IEnumerable<Acao>>> ObterTodas()
         {
             IEnumerable<Acao> result = await ObterAcoesCache();
             return BaseResponse(result);
         }
 
-        [HttpGet("obter-todas-m4")]
+        [HttpGet("obter-todas-magic-formula")]
         [Authorize]
-        public async Task<ActionResult<IEnumerable<AcaoClassificacao>>> ObterTodasM4([FromQuery] ECriterio criterio)
+        public async Task<ActionResult<IEnumerable<AcaoClassificacao>>> ObterTodasMagicFormula([FromQuery] ECriterio criterio)
         {
             var acoes = await ObterAcoesClassificadas(criterio);
             return BaseResponse(acoes);
         }
 
-        [HttpGet("obter-5-m4")]
-        public async Task<ActionResult<IEnumerable<AcaoClassificacao>>> Obter5M4([FromQuery] ECriterio criterio)
+        [HttpGet("obter-5-magic-formula")]
+        public async Task<ActionResult<IEnumerable<AcaoClassificacao>>> Obter5MagicFormula([FromQuery] ECriterio criterio)
         {
             var acoes = await ObterAcoesClassificadas(criterio);
             return BaseResponse(acoes.Take(5));
