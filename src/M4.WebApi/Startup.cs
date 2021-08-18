@@ -25,6 +25,7 @@ namespace M4.WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAzureAppConfiguration();
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", build =>
             {
                 build.WithOrigins("*")
@@ -48,16 +49,15 @@ namespace M4.WebApi
             services.AddAutoMapperProfile();
             services.AddHttpClients();
             services.RegistryServices();
-            services.AddControllers().AddNewtonsoftJson(options => {
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
                 options.SerializerSettings.Converters.Add(new StringEnumConverter()); options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-            }); ;
-
-
-
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            app.UseAzureAppConfiguration();
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -73,7 +73,6 @@ namespace M4.WebApi
             {
                 endpoints.MapControllers();
             });
-
         }
     }
 }

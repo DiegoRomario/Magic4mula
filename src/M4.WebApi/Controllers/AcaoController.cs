@@ -48,7 +48,6 @@ namespace M4.WebApi.Controllers
         }
 
         [HttpGet("obter-5-m4")]
-        [FeatureGate("todas-acoes")]
         public async Task<ActionResult<IEnumerable<AcaoClassificacao>>> Obter5M4([FromQuery] ECriterio criterio)
         {
             var acoes = await ObterAcoesClassificadas(criterio);
