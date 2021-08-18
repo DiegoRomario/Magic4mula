@@ -10,6 +10,7 @@ using M4.Infrastructure.Configurations.Models;
 using M4.WebApi.Configurations;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Converters;
+using Microsoft.FeatureManagement;
 
 namespace M4.WebApi
 {
@@ -35,6 +36,7 @@ namespace M4.WebApi
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+            services.AddFeatureManagement();
             services.AddMemoryCache();
             services.AddCustomHealthChecks(_configuration);
             services.AddSwaggerConfiguration();

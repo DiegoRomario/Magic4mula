@@ -10,6 +10,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.FeatureManagement;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace M4.WebApi.Controllers
 {
@@ -21,15 +23,17 @@ namespace M4.WebApi.Controllers
         private readonly IMapper _mapper;
         private const string _TODASACOES = "todasacoes";
 
-        public AcaoController(IAcoesService acoesService, IMemoryCache cache, IMapper mapper)
+        public AcaoController(IAcoesService acoesService, IMemoryCache cache, IMapper mapper, IFeatureManager featureManager)
         {
             _acoesService = acoesService;
             _cache = cache;
             _mapper = mapper;
         }
 
+
         [HttpGet("obter-todas")]
         [Authorize]
+        [FeatureGate("todas-acoes")]
         public async Task<ActionResult<IEnumerable<Acao>>> ObterTodas()
         {
             IEnumerable<Acao> result = await ObterAcoesCache();

@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.UserSecrets;
-using System.IO;
-
 
 namespace M4.WebApi
 {
@@ -23,13 +20,14 @@ namespace M4.WebApi
                     config.AddUserSecrets<Program>();
                 }
                 var settings = config.Build();
+
                 config.AddAzureAppConfiguration(options =>
                 {
                     options.Connect(settings["ConnectionStrings:AppConfig"])
                         .ConfigureRefresh(refresh =>
                         {
                             refresh.Register("Urls:ConfirmacaoEmail");
-                        });
+                        }).UseFeatureFlags();
                 });
             })
             .ConfigureWebHostDefaults(webBuilder =>
