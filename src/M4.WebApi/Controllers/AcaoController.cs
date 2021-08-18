@@ -10,7 +10,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.FeatureManagement;
 using Microsoft.FeatureManagement.Mvc;
 
 namespace M4.WebApi.Controllers
@@ -23,7 +22,7 @@ namespace M4.WebApi.Controllers
         private readonly IMapper _mapper;
         private const string _TODASACOES = "todasacoes";
 
-        public AcaoController(IAcoesService acoesService, IMemoryCache cache, IMapper mapper, IFeatureManager featureManager)
+        public AcaoController(IAcoesService acoesService, IMemoryCache cache, IMapper mapper)
         {
             _acoesService = acoesService;
             _cache = cache;
@@ -49,6 +48,7 @@ namespace M4.WebApi.Controllers
         }
 
         [HttpGet("obter-5-m4")]
+        [FeatureGate("todas-acoes")]
         public async Task<ActionResult<IEnumerable<AcaoClassificacao>>> Obter5M4([FromQuery] ECriterio criterio)
         {
             var acoes = await ObterAcoesClassificadas(criterio);
