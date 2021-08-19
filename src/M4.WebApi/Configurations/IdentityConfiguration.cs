@@ -18,8 +18,7 @@ namespace M4.WebApi.Configurations
         public static IServiceCollection AddIdentityConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<UserIdentityDbContext>(options =>
-            options.UseInMemoryDatabase(configuration.GetConnectionString("M4Connection")));
-
+            options.UseInMemoryDatabase(configuration.GetConnectionString("MagicFormulaDB")));
 
             services.AddIdentity<UserIdentity, IdentityRole>(opt =>
             {
