@@ -11,14 +11,14 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
 
-namespace M4.WebApi.Configurations
+namespace M4.Infrastructure.Configurations
 {
     public static class IdentityConfiguration
     {
         public static IServiceCollection AddIdentityConfiguration(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddDbContext<UserIdentityDbContext>(options =>
-            options.UseInMemoryDatabase(configuration.GetConnectionString("MagicFormulaDB")));
+            options.UseSqlServer(configuration.GetConnectionString("MagicFormulaSQLServer")));
 
             services.AddIdentity<UserIdentity, IdentityRole>(opt =>
             {
@@ -62,7 +62,7 @@ namespace M4.WebApi.Configurations
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(appSettings.Secret)),
                     ValidateIssuer = true,
                     ValidAudience = appSettings.Audience,
-                    ValidIssuer = appSettings.Issuer    ,
+                    ValidIssuer = appSettings.Issuer,
                 };
             });
 

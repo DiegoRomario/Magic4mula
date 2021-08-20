@@ -20,7 +20,7 @@ namespace M4.Infrastructure.Services.HealthChecks
         {
             try
             {
-                using (var connection = new SqlConnection(_configuration.GetConnectionString("MagicFormulaDB")))
+                using (var connection = new SqlConnection(_configuration.GetConnectionString("MagicFormulaSQLServer")))
                 {
                     await connection.OpenAsync(cancellationToken);
 

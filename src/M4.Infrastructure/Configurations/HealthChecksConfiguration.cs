@@ -13,7 +13,7 @@ namespace M4.Infrastructure.Configurations
         {
             services.AddHealthChecks()
             .AddCheck("Usuários Cadastrados", new SqlServerHealthCheck(configuration))
-            .AddSqlServer(configuration.GetConnectionString("MagicFormulaDB"), name: "Banco de dados SQL Server");
+            .AddSqlServer(configuration.GetConnectionString("MagicFormulaSQLServer"), name: "Banco de dados SQL Server");
             services.AddHealthChecksUI().AddInMemoryStorage();
             return services;
         }
