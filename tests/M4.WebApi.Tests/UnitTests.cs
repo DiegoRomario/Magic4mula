@@ -2,7 +2,7 @@ using Xunit;
 
 namespace M4.WebApi.Tests
 {
-    public class UnitTest1
+    public class UnitTests
     {
         [Fact]
         public void Test1()
