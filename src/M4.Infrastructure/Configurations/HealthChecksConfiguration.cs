@@ -11,10 +11,9 @@ namespace M4.Infrastructure.Configurations
     {
         public static IServiceCollection AddCustomHealthChecks(this IServiceCollection services, IConfiguration configuration)
         {
-
             services.AddHealthChecks()
             .AddCheck("Usuários Cadastrados", new SqlServerHealthCheck(configuration))
-            .AddSqlServer(configuration.GetConnectionString("M4Connection"), name: "Banco de dados SQL Server");
+            .AddSqlServer(configuration.GetConnectionString("MagicFormulaSQLServer"), name: "Banco de dados SQL Server");
             services.AddHealthChecksUI().AddInMemoryStorage();
             return services;
         }

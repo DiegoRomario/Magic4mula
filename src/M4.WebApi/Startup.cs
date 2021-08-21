@@ -23,8 +23,9 @@ namespace M4.WebApi
             _configuration = configuration;
         }
 
-        public void ConfigureServices(IServiceCollection services)
-        {
+        public virtual void ConfigureServices(IServiceCollection services)
+        { 
+
             services.AddAzureAppConfiguration();
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", build =>
             {
@@ -55,13 +56,14 @@ namespace M4.WebApi
             });
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseAzureAppConfiguration();
-            if (env.IsDevelopment())
-            {
+            if (!env.IsEnvironment("Testing"))            
+                app.UseAzureAppConfiguration();
+            
+            if (env.IsDevelopment())           
                 app.UseDeveloperExceptionPage();
-            }
+          
             app.UseCors("ApiCorsPolicy");
             app.UseHttpsRedirection();
             app.UseAuthentication();

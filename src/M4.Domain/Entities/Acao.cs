@@ -2,7 +2,7 @@
 {
     public class Acao : Entity
     {
-        private Acao() {}
+        protected Acao() {}
         public Acao(string ticker, decimal cotacao, decimal pL, decimal pVP, decimal pSR, decimal dY, decimal pAtivo, decimal pCapGiro, decimal pEBIT, decimal pAtivoCirculanteLiquido, decimal eVEBIT, decimal eVEBITDA, decimal margemEbit, decimal margemLiquida, decimal liquidezCorrente, decimal rOIC, decimal rOE, decimal liquidez2Meses, decimal patrimonioLiquido, decimal divBrutaPatrimonio, decimal crescimentoReceita5Anos)
         {
             Ticker = ticker;
