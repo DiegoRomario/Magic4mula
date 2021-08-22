@@ -82,7 +82,7 @@ namespace M4.WebApi.Tests
             Assert.True(string.IsNullOrEmpty(body));
         }
 
-        [Fact(DisplayName = "Obter status 200 ao tentar cadastrar usuário com dados válidos")]
+        [Fact(DisplayName = "Obter status 204 ao tentar cadastrar usuário com dados válidos")]
         [Trait("Integração", "Ações")]
         public async Task DadosQueOCadastroDeUsuariosFoiChamado_QuandoConterDadosValidos_DeveCadastrarUsuarioEEnviarEmailDeConfirmacao()
         {
@@ -93,10 +93,8 @@ namespace M4.WebApi.Tests
             context.Database.EnsureCreated();
             // Act
             var response = await client.PostAsJsonAsync("https://localhost/api/usuario/cadastrar", usuario);
-            var body = await response.Content.ReadAsStringAsync();
             // Assert
-            Assert.Contains("Usuário cadastrado com sucesso! Um e-mail foi enviado para confirmação do cadastro.", body);
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
     }
 }

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using M4.Infrastructure.Data.Identity;
+using Microsoft.AspNetCore.Hosting;
 
 namespace M4.WebApi.Controllers
 {
@@ -27,16 +28,20 @@ namespace M4.WebApi.Controllers
         private readonly IEmailSender _emailSender;
         private readonly Urls _uRLs;
         private readonly AppSettings _appSettings;
+        private readonly IWebHostEnvironment _iHostingEnvironment;
+        private readonly bool isTesting;
 
         public UsuarioController(SignInManager<UserIdentity> signInManager,
             UserManager<UserIdentity> userManager,
-            IEmailSender emailSender, IOptions<Urls> URLs, IOptions<AppSettings> appSettings)
+            IEmailSender emailSender, IOptions<Urls> URLs, IOptions<AppSettings> appSettings, IWebHostEnvironment iHostingEnvironment)
         {
             _signInManager = signInManager;
             _userManager = userManager;
             _emailSender = emailSender;
             _uRLs = URLs.Value;
             _appSettings = appSettings.Value;
+            _iHostingEnvironment = iHostingEnvironment;
+            isTesting = _iHostingEnvironment.EnvironmentName == "Testing";
         }
         [HttpPost("cadastrar")]
         public async Task<ActionResult> Cadastrar(UsuarioCadastro usuarioCadastro)
@@ -47,14 +52,14 @@ namespace M4.WebApi.Controllers
             {
                 UserName = usuarioCadastro.Email,
                 Email = usuarioCadastro.Email,
-                EmailConfirmed = false,
+                EmailConfirmed = isTesting,
                 Name = usuarioCadastro.Nome,
                 LastName = usuarioCadastro.Sobrenome
             };
 
             IdentityResult result = await _userManager.CreateAsync(usuario, usuarioCadastro.Senha);
 
-            if (result.Succeeded)
+            if (result.Succeeded && !isTesting)
             {
                 try
                 {
