@@ -43,13 +43,17 @@ namespace M4.WebApi.Tests
             });
         }
 
-        [Fact]
+        [Fact(DisplayName = "Obter 5 ações magic formula (Usuário não logado)")]
+        [Trait("Integração", "Ações")]
         public async Task DadoQueOEndPointObter5MagicFormulaFoiChamado_DeveRetornar5PrimeirosRegistros()
         {
+            // Arrange
             var client = _factory.CreateClient();
+            // Act
             var response = await client.GetAsync("https://localhost/api/acoes/obter-5-magic-formula");
-            var body =  await response.Content.ReadAsStringAsync();
+            var body = await response.Content.ReadAsStringAsync();
             var registros = JsonSerializer.Deserialize<IEnumerable<AcaoClassificacao>>(body);
+            // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal(5, registros.Count());
         }
