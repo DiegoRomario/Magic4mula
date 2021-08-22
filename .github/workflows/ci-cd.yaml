@@ -23,7 +23,7 @@ jobs:
           
       - name: Start SQL Server 🎲
         run: |
-          docker run -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Pass~w0r8' -e 'MSSQL_PID=Express' -p 1433:1433 -d mcr.microsoft.com/mssql/server:latest
+          docker run -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Testing@666' -e 'MSSQL_PID=Express' -p 1433:1433 -d mcr.microsoft.com/mssql/server:latest
 
       - name: Sleeping for 10 seconds 😴
         uses: jakejarvis/wait-action@master
@@ -39,12 +39,7 @@ jobs:
       - name: Run automated tests 🧪
         env:
           HttpClients__Acoes: ${{ secrets.HTTP_CLIENTS_ACOES }}
-          ConnectionStrings__MagicFormulaSQLServer: Server=localhost;Database=CiCdDemo_Test;User=sa;Password=Pass~w0r8
-          EmailConfiguration__From: ${{ secrets.EMAIL_CONFIGURATION_FROM }}
-          EmailConfiguration__SmtpServer: ${{ secrets.EMAIL_CONFIGURATION_SMTP_SERVER }}
-          EmailConfiguration__Port: ${{ secrets.EMAIL_CONFIGURATION_PORT }}
-          EmailConfiguration__Username: ${{ secrets.EMAIL_CONFIGURATION_USERNAME }}
-          EmailConfiguration__Password: ${{ secrets.EMAIL_CONFIGURATION_PASSWORD }}
+          ConnectionStrings__MagicFormulaSQLServer: ${{ secrets.CONNECTION_STRINGS_MAGIC_FORMULA_SQL_SERVER }}
         run: dotnet test -c Release --no-build
 
       - name: Publish app 📰
