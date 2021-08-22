@@ -25,6 +25,7 @@ namespace M4.WebApi
 
         public virtual void ConfigureServices(IServiceCollection services)
         { 
+
             services.AddAzureAppConfiguration();
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", build =>
             {
@@ -60,9 +61,9 @@ namespace M4.WebApi
             if (!env.IsEnvironment("Testing"))            
                 app.UseAzureAppConfiguration();
             
-            if (env.IsDevelopment())            
+            if (env.IsDevelopment())           
                 app.UseDeveloperExceptionPage();
-            
+          
             app.UseCors("ApiCorsPolicy");
             app.UseHttpsRedirection();
             app.UseAuthentication();
