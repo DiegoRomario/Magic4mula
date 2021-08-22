@@ -68,7 +68,7 @@ namespace M4.WebApi.Controllers
                 catch (Exception ex)
                 {
                     await _userManager.DeleteAsync(usuario);
-                    AdicionarErro($"Ocorreu um erro durante o cadastro de usuário, por favor entre em contato com o suporte. {ex.Message}");
+                    AdicionarErro($"Ocorreu um erro durante o cadastro de usuário, por favor entre em contato com o suporte. {ex.Message} || {ex.StackTrace}");
                     return BaseResponse(statusCodeErro: HttpStatusCode.InternalServerError);
                 }
             }
@@ -133,7 +133,7 @@ namespace M4.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                AdicionarErro($"Ocorreu um erro durante o cadastro de usuário, por favor entre em contato com o suporte. {ex.Message}");
+                AdicionarErro($"Ocorreu um erro durante o cadastro de usuário, por favor entre em contato com o suporte. {ex.Message} || {ex.StackTrace}");
                 return BaseResponse(statusCodeErro: HttpStatusCode.InternalServerError);
             }
 

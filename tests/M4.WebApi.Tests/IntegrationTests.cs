@@ -41,8 +41,8 @@ namespace M4.WebApi.Tests
                         .AddUserSecrets<IntegrationTests>()
                         .AddEnvironmentVariables();
 
-                    string connectionString = conf.Build()["ConnectionStrings:MagicFormulaSQLServer"];
-                    optionsBuilder.UseSqlServer(connectionString);
+                    var teste = conf.Build()["ConnectionStrings:MagicFormulaSQLServer"];
+                    optionsBuilder.UseSqlServer(teste);
                     this.context = new UserIdentityDbContext(optionsBuilder.Options);
                 });
 
@@ -95,8 +95,8 @@ namespace M4.WebApi.Tests
             var response = await client.PostAsJsonAsync("https://localhost/api/usuario/cadastrar", usuario);
             var body = await response.Content.ReadAsStringAsync();
             // Assert
-            //Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Contains("Usuário cadastrado com sucesso! Um e-mail foi enviado para confirmação do cadastro.", body);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }
