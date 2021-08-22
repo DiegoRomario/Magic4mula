@@ -33,7 +33,7 @@ namespace M4.WebApi.Tests
 
                 builder.ConfigureAppConfiguration(conf =>
                 {
-                    conf.AddJsonFile(configPath).AddUserSecrets<IntegrationTests>();
+                    conf.AddJsonFile(configPath).AddUserSecrets<IntegrationTests>().AddEnvironmentVariables();
                 });
 
                 builder.ConfigureTestServices(services =>
