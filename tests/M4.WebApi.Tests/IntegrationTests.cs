@@ -13,7 +13,9 @@ using System.Text.Json;
 using M4.WebApi.Models;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Net.Http.Json;
+using M4.Infrastructure.Data.Identity;
+using Microsoft.EntityFrameworkCore;
 namespace M4.WebApi.Tests
 {
     public class IntegrationTests : IClassFixture<M4Factory<StartupTesting>>
@@ -21,11 +23,13 @@ namespace M4.WebApi.Tests
         private const string APP_SETTINGS_TESTING_PATH = "Config/appsettings.Testing.json";
         private const string SOLUTION_RELATIVE_PATH = "src/M4.WebApi";
         private readonly WebApplicationFactory<StartupTesting> _factory;
+        public UserIdentityDbContext context { get; set; }
 
         public IntegrationTests(M4Factory<StartupTesting> factory)
         {
             var projectDir = Directory.GetCurrentDirectory();
             var configPath = Path.Combine(projectDir, APP_SETTINGS_TESTING_PATH);
+            var optionsBuilder = new DbContextOptionsBuilder<UserIdentityDbContext>();
 
             _factory = factory.WithWebHostBuilder(builder =>
             {
@@ -33,7 +37,13 @@ namespace M4.WebApi.Tests
 
                 builder.ConfigureAppConfiguration(conf =>
                 {
-                    conf.AddJsonFile(configPath).AddUserSecrets<IntegrationTests>().AddEnvironmentVariables();
+                    conf.AddJsonFile(configPath)
+                        .AddUserSecrets<IntegrationTests>()
+                        .AddEnvironmentVariables();
+
+                    string connectionString = conf.Build()["ConnectionStrings:MagicFormulaSQLServer"];
+                    optionsBuilder.UseSqlServer(connectionString);
+                    this.context = new UserIdentityDbContext(optionsBuilder.Options);
                 });
 
                 builder.ConfigureTestServices(services =>
@@ -70,6 +80,22 @@ namespace M4.WebApi.Tests
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
             Assert.True(string.IsNullOrEmpty(body));
+        }
+
+        [Fact(DisplayName = "Obter status 200 ao tentar cadastrar usuário com dados válidos")]
+        [Trait("Integração", "Ações")]
+        public async Task DadosQueOCadastroDeUsuariosFoiChamado_QuandoConterDadosValidos_DeveCadastrarUsuarioEEnviarEmailDeConfirmacao()
+        {
+            // Arrange
+            var usuario = new UsuarioCadastro { Email = "demo@demo.com.br", Senha = "Demo@666", SenhaConfirmacao = "Demo@666", Nome = "Diego", Sobrenome = "Romário"  };
+            var client = _factory.CreateClient();
+            context.Database.EnsureDeleted();
+            context.Database.EnsureCreated();
+            // Act
+            var response = await client.PostAsJsonAsync("https://localhost/api/usuario/cadastrar", usuario);
+            var body = await response.Content.ReadAsStringAsync();
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         }
     }
 }
