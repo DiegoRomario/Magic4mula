@@ -39,7 +39,7 @@ jobs:
       - name: Run automated tests 🧪
         env:
           HttpClients__Acoes: ${{ secrets.HTTP_CLIENTS_ACOES }}
-          ConnectionStrings__MagicFormulaSQLServer: ${{ secrets.CONNECTION_STRINGS_MAGIC_FORMULA_SQL_SERVER }}
+          ConnectionStrings__MagicFormulaSQLServer: Server=localhost;Database=CiCdDemo_Test;User=sa;Password=Pass~w0r8
         run: dotnet test -c Release --no-build
 
       - name: Publish app 📰
