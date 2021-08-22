@@ -27,7 +27,9 @@ jobs:
       - name: Build app 🚀
         run: dotnet build -c Release
 
-      - name: Run unit tests 🧪
+      - name: Run automated tests 🧪
+        env:
+          HttpClients__Acoes: ${{ secrets.HTTP_CLIENTS_ACOES }}
         run: dotnet test -c Release --no-build
 
       - name: Publish app 📰
