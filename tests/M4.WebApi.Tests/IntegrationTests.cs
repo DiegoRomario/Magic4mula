@@ -43,9 +43,9 @@ namespace M4.WebApi.Tests
             });
         }
 
-        [Fact(DisplayName = "Obter 5 ações magic formula (Usuário não logado)")]
+        [Fact(DisplayName = "Obter status 200 ao buscar 5 ações magic formula (Usuário não logado)")]
         [Trait("Integração", "Ações")]
-        public async Task DadoQueOEndPointObter5MagicFormulaFoiChamado_DeveRetornar5PrimeirosRegistros()
+        public async Task DadoQueObter5MagicFormulaFoiChamado_QuandoOUsuarioEstiverDeslogado_DeveRetornar5PrimeirosRegistros()
         {
             // Arrange
             var client = _factory.CreateClient();
@@ -56,6 +56,20 @@ namespace M4.WebApi.Tests
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.Equal(5, registros.Count());
+        }
+
+        [Fact(DisplayName = "Obter status 401 ao buscar todas ações magic formula (Usuário não logado)")]
+        [Trait("Integração", "Ações")]
+        public async Task DadoQueObterTodasMagicFormulaFoiChamado_QuandoOUsuarioEstiverDeslogado_DeveRetornarOStatus401()
+        {
+            // Arrange
+            var client = _factory.CreateClient();
+            // Act
+            var response = await client.GetAsync("https://localhost/api/acoes/obter-todas-magic-formula");
+            var body = await response.Content.ReadAsStringAsync();
+            // Assert
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.True(string.IsNullOrEmpty(body));
         }
     }
 }
