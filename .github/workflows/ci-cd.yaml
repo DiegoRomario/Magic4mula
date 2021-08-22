@@ -20,7 +20,16 @@ jobs:
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
+          
+      - name: Start SQL Server 🎲
+        run: |
+          docker run -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Password@666' -e 'MSSQL_PID=Express' -p 1433:1433 mcr.microsoft.com/mssql/server:latest
 
+      - name: Sleeping for 10 seconds 😴
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '10s'
+      
       - name: Restore dependencies 🎡
         run: dotnet restore
       
@@ -30,6 +39,7 @@ jobs:
       - name: Run automated tests 🧪
         env:
           HttpClients__Acoes: ${{ secrets.HTTP_CLIENTS_ACOES }}
+          ConnectionStrings__MagicFormulaSQLServer: ${{ secrets.CONNECTION_STRINGS_MAGIC_FORMULA_SQL_SERVER }}
         run: dotnet test -c Release --no-build
 
       - name: Publish app 📰
