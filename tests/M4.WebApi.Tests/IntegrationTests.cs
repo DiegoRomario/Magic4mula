@@ -67,8 +67,8 @@ namespace M4.WebApi.Tests
             _client = _factory.CreateClient(clientOptions);
         }
 
-        [Fact(DisplayName = "Obter status 200 ao buscar 5 ações magic formula (Usuário não logado)")]
-        [Trait("Integração", "Ações")]
+        [Fact(DisplayName = "Obter status 200 ao buscar 5 aï¿½ï¿½es magic formula (Usuï¿½rio nï¿½o logado)")]
+        [Trait("Integraï¿½ï¿½o", "Aï¿½ï¿½es")]
         public async Task DadoQueObter5MagicFormulaFoiChamado_QuandoOUsuarioEstiverDeslogado_DeveRetornar5PrimeirosRegistros()
         {
             // Arrange
@@ -81,8 +81,8 @@ namespace M4.WebApi.Tests
             Assert.Equal(5, registros.Count());
         }
 
-        [Fact(DisplayName = "Obter status 401 ao buscar todas ações magic formula (Usuário não logado)")]
-        [Trait("Integração", "Ações")]
+        [Fact(DisplayName = "Obter status 401 ao buscar todas aï¿½ï¿½es magic formula (Usuï¿½rio nï¿½o logado)")]
+        [Trait("Integraï¿½ï¿½o", "Aï¿½ï¿½es")]
         public async Task DadoQueObterTodasMagicFormulaFoiChamado_QuandoOUsuarioEstiverDeslogado_DeveRetornarOStatus401()
         {
             // Arrange
@@ -94,8 +94,8 @@ namespace M4.WebApi.Tests
             Assert.True(string.IsNullOrEmpty(body));
         }
 
-        [Fact(DisplayName = "Obter status 204 ao tentar cadastrar usuário com dados válidos")]
-        [Trait("Integração", "Usuario")]
+        [Fact(DisplayName = "Obter status 204 ao tentar cadastrar usuï¿½rio com dados vï¿½lidos")]
+        [Trait("Integraï¿½ï¿½o", "Usuario")]
         public async Task DadosQueOCadastroDeUsuariosFoiChamado_QuandoConterDadosValidos_DeveCadastrarUsuarioEEnviarEmailDeConfirmacao()
         {
             // Arrange
@@ -107,7 +107,7 @@ namespace M4.WebApi.Tests
 
         private async Task<HttpResponseMessage> CadastrarUsuario()
         {
-            var usuario = new UsuarioCadastro { Email = "demo@demo.com.br", Senha = "Demo@666", SenhaConfirmacao = "Demo@666", Nome = "Diego", Sobrenome = "Romário" };
+            var usuario = new UsuarioCadastro { Email = "demo@demo.com.br", Senha = "Demo@666", SenhaConfirmacao = "Demo@666", Nome = "Diego", Sobrenome = "Romï¿½rio" };
             _context.Database.EnsureDeleted();
             _context.Database.EnsureCreated();
             var response = await _client.PostAsJsonAsync("https://localhost/api/usuario/cadastrar", usuario);
@@ -131,8 +131,8 @@ namespace M4.WebApi.Tests
             return usuarioResponse;
         }
 
-        [Fact(DisplayName = "Obter dados de usuário cadastrados (token) ao se logar com dados válidos")]
-        [Trait("Integração", "Usuario")]
+        [Fact(DisplayName = "Obter dados de usuï¿½rio cadastrados (token) ao se logar com dados vï¿½lidos")]
+        [Trait("Integraï¿½ï¿½o", "Usuario")]
         public async Task DadosQueExisteOUsuarioCadastrado_QuandoOLoginForRequisitado_DeveRetornarOsDadosDoMesmo()
         {
             // Arrange
@@ -142,6 +142,23 @@ namespace M4.WebApi.Tests
             // Assert
             Assert.NotNull(response.AccessToken);
             Assert.True(response.AccessToken.Length > 20);
+        }
+
+        [Fact(DisplayName = "Obter status 200 ao buscar todas aï¿½ï¿½es magic formula (Usuï¿½rio logado)")]
+        [Trait("Integraï¿½ï¿½o", "Aï¿½ï¿½es")]
+        public async Task DadoQueObterTodasMagicFormulaFoiChamado_QuandoOUsuarioEstiverLogado_DeveRetornarOStatus200EOsRegistros()
+        {
+            // Arrange
+            await CadastrarUsuario();
+            UsuarioRespostaLogin usuario = await LogarUsuario();
+            _client.AtribuirToken(usuario.AccessToken);
+            // Act
+            var response = await _client.GetAsync("acoes/obter-todas-magic-formula");
+            var body = await response.Content.ReadAsStringAsync();
+            var acoes = JsonSerializer.Deserialize<IEnumerable<AcaoClassificacao>>(body);
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.True(acoes.Count() > 5);
         }
     }
 }
