@@ -1,79 +1,32 @@
-using M4.WebApi.Tests.Config;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using System.IO;
-using System.Net;
-using System.Threading.Tasks;
-using Xunit;
-using System.Text.Json;
 using M4.WebApi.Models;
+using M4.WebApi.Tests.Config;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http.Json;
-using M4.Infrastructure.Data.Identity;
-using Microsoft.EntityFrameworkCore;
+using System.Net;
 using System.Net.Http;
-using System;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace M4.WebApi.Tests
 {
-    public class IntegrationTests : IClassFixture<M4Factory<StartupTesting>>
+    [Collection(nameof(IntegrationApiTestsFixtureCollection))]
+    public class IntegrationTests
     {
-        private const string APP_SETTINGS_TESTING_PATH = "Config/appsettings.Testing.json";
-        private const string SOLUTION_RELATIVE_PATH = "src/M4.WebApi";
-        private readonly WebApplicationFactory<StartupTesting> _factory;
-        private UserIdentityDbContext _context { get; set; }
-        private HttpClient _client;
+        private readonly IntegrationTestsFixture<StartupTesting> _testsFixture;
 
-        public IntegrationTests(M4Factory<StartupTesting> factory)
+        public IntegrationTests(IntegrationTestsFixture<StartupTesting> testsFixture)
         {
-            var projectDir = Directory.GetCurrentDirectory();
-            var configPath = Path.Combine(projectDir, APP_SETTINGS_TESTING_PATH);
-            var optionsBuilder = new DbContextOptionsBuilder<UserIdentityDbContext>();
-
-            _factory = factory.WithWebHostBuilder(builder =>
-            {
-                builder.UseSolutionRelativeContentRoot(SOLUTION_RELATIVE_PATH);
-
-                builder.ConfigureAppConfiguration(conf =>
-                {
-                    conf.AddJsonFile(configPath)
-                        .AddUserSecrets<IntegrationTests>()
-                        .AddEnvironmentVariables();
-
-                    var connectionString = conf.Build()["ConnectionStrings:MagicFormulaSQLServer"];
-                    optionsBuilder.UseSqlServer(connectionString);
-                    this._context = new UserIdentityDbContext(optionsBuilder.Options);
-                });
-
-                builder.ConfigureTestServices(services =>
-                {
-                    services.AddMvc().AddApplicationPart(typeof(Startup).Assembly);
-                });
-            });
-
-            var clientOptions = new WebApplicationFactoryClientOptions
-            {
-                AllowAutoRedirect = true,
-                BaseAddress = new Uri("http://localhost/api/"),
-                HandleCookies = true,
-                MaxAutomaticRedirections = 7
-            };
-
-            _client = _factory.CreateClient(clientOptions);
+            _testsFixture = testsFixture;
         }
 
-        [Fact(DisplayName = "Obter status 200 ao buscar 5 aÁıes magic formula (Usu·rio n„o logado)")]
-        [Trait("IntegraÁ„o", "AÁıes")]
+        [Fact(DisplayName = "Obter status 200 ao buscar 5 a√ß√µes magic formula (Usu√°rio n√£o logado)"), TestPriority(1)]
+        [Trait("Integra√ß√£o", "A√ß√µes")]
         public async Task DadoQueObter5MagicFormulaFoiChamado_QuandoOUsuarioEstiverDeslogado_DeveRetornar5PrimeirosRegistros()
         {
             // Arrange
             // Act
-            var response = await _client.GetAsync("acoes/obter-5-magic-formula");
+            var response = await _testsFixture.Client.GetAsync("acoes/obter-5-magic-formula");
             var body = await response.Content.ReadAsStringAsync();
             var registros = JsonSerializer.Deserialize<IEnumerable<AcaoClassificacao>>(body);
             // Assert
@@ -81,67 +34,56 @@ namespace M4.WebApi.Tests
             Assert.Equal(5, registros.Count());
         }
 
-        [Fact(DisplayName = "Obter status 401 ao buscar todas aÁıes magic formula (Usu·rio n„o logado)")]
-        [Trait("IntegraÁ„o", "AÁıes")]
+        [Fact(DisplayName = "Obter status 401 ao buscar todas a√ß√µes magic formula (Usu√°rio n√£o logado)"), TestPriority(2)]
+        [Trait("Integra√ß√£o", "A√ß√µes")]
         public async Task DadoQueObterTodasMagicFormulaFoiChamado_QuandoOUsuarioEstiverDeslogado_DeveRetornarOStatus401()
         {
             // Arrange
             // Act
-            var response = await _client.GetAsync("acoes/obter-todas-magic-formula");
+            var response = await _testsFixture.Client.GetAsync("acoes/obter-todas-magic-formula");
             var body = await response.Content.ReadAsStringAsync();
             // Assert
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
             Assert.True(string.IsNullOrEmpty(body));
         }
 
-        [Fact(DisplayName = "Obter status 204 ao tentar cadastrar usu·rio com dados v·lidos")]
-        [Trait("IntegraÁ„o", "Usuario")]
+        [Fact(DisplayName = "Obter status 204 ao tentar cadastrar usu√°rio com dados v√°lidos"), TestPriority(3)]
+        [Trait("Integra√ß√£o", "Usuario")]
         public async Task DadosQueOCadastroDeUsuariosFoiChamado_QuandoConterDadosValidos_DeveCadastrarUsuarioEEnviarEmailDeConfirmacao()
         {
             // Arrange
             // Act
-            HttpResponseMessage response = await CadastrarUsuario();
+            HttpResponseMessage response = await _testsFixture.CadastrarUsuario();
             // Assert
             Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         }
 
-        private async Task<HttpResponseMessage> CadastrarUsuario()
-        {
-            var usuario = new UsuarioCadastro { Email = "demo@demo.com.br", Senha = "Demo@666", SenhaConfirmacao = "Demo@666", Nome = "Diego", Sobrenome = "Rom·rio" };
-            _context.Database.EnsureDeleted();
-            _context.Database.EnsureCreated();
-            var response = await _client.PostAsJsonAsync("https://localhost/api/usuario/cadastrar", usuario);
-            return response;
-        }
 
-        private async Task<UsuarioRespostaLogin> LogarUsuario()
-        {
-            var usuarioLogin = new UsuarioLogin
-            {
-                Email = "demo@demo.com.br",
-                Senha = "Demo@666"
-            };
-
-            var response = await _client.PostAsJsonAsync("usuario/entrar", usuarioLogin);
-            response.EnsureSuccessStatusCode();
-            var body = await response.Content.ReadAsStringAsync();
-            var usuarioResponse = JsonSerializer.Deserialize<UsuarioRespostaLogin>(body, new JsonSerializerOptions() { 
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            });
-            return usuarioResponse;
-        }
-
-        [Fact(DisplayName = "Obter dados de usu·rio cadastrados (token) ao se logar com dados v·lidos")]
-        [Trait("IntegraÁ„o", "Usuario")]
+        [Fact(DisplayName = "Obter dados de usu√°rio cadastrados (token) ao se logar com dados v√°lidos"), TestPriority(4)]
+        [Trait("Integra√ß√£o", "Usuario")]
         public async Task DadosQueExisteOUsuarioCadastrado_QuandoOLoginForRequisitado_DeveRetornarOsDadosDoMesmo()
         {
             // Arrange
-            await CadastrarUsuario();
             // Act
-            var response = await LogarUsuario();
+            await _testsFixture.LogarUsuario();
             // Assert
-            Assert.NotNull(response.AccessToken);
-            Assert.True(response.AccessToken.Length > 20);
+            Assert.NotNull(_testsFixture.UsuarioLogado.AccessToken);
+            Assert.True(_testsFixture.UsuarioLogado.AccessToken.Length > 20);
+        }
+
+        [Fact(DisplayName = "Obter status 200 ao buscar todas a√ß√µes magic formula (Usu√°rio logado)"), TestPriority(5)]
+        [Trait("Integra√ß√£o", "A√ß√µes")]
+        public async Task DadoQueObterTodasMagicFormulaFoiChamado_QuandoOUsuarioEstiverLogado_DeveRetornarOStatus200EOsRegistros()
+        {
+            // Arrange
+            // Act
+            _testsFixture.Client.AtribuirToken(_testsFixture.UsuarioLogado.AccessToken);
+            var response = await _testsFixture.Client.GetAsync("acoes/obter-todas-magic-formula");
+            var body = await response.Content.ReadAsStringAsync();
+            var acoes = JsonSerializer.Deserialize<IEnumerable<AcaoClassificacao>>(body);
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.True(acoes.Count() > 5);
         }
     }
 }
