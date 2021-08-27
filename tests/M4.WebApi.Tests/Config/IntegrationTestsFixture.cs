@@ -1,4 +1,5 @@
-﻿using M4.Infrastructure.Data.Identity;
+﻿using Bogus;
+using M4.Infrastructure.Data.Identity;
 using M4.WebApi.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -26,8 +27,7 @@ namespace M4.WebApi.Tests.Config
     {
         private const string APP_SETTINGS_TESTING_PATH = "Config/appsettings.Testing.json";
         private const string SOLUTION_RELATIVE_PATH = "src/M4.WebApi";
-        public string UsuarioEmail;
-        public string UsuarioSenha;
+        public UsuarioCadastro UsuarioCadastro;
         public UsuarioRespostaLogin UsuarioLogado;
 
         private readonly WebApplicationFactory<TStartup> _WebApplicationFactory;
@@ -74,16 +74,19 @@ namespace M4.WebApi.Tests.Config
 
         public void GerarUsuario()
         {
-            UsuarioEmail = "demo@demo.com.br";
-            UsuarioSenha = "Demo@666";
+            var faker = new Faker("pt_BR");
+            var senha = faker.Internet.Password(length: 8, prefix: "D3mº");
+            var nome = faker.Name.FirstName();
+            var sobrenome = faker.Name.LastName();
+            UsuarioCadastro = new UsuarioCadastro { Email = faker.Internet.Email(nome,sobrenome), Senha = senha, SenhaConfirmacao = senha, Nome = nome, Sobrenome = sobrenome };
         }
 
         public async Task LogarUsuario()
         {
             var usuarioLogin = new UsuarioLogin
             {
-                Email = UsuarioEmail,
-                Senha = UsuarioSenha
+                Email = UsuarioCadastro.Email,
+                Senha = UsuarioCadastro.Senha
             };
 
             var response = await Client.PostAsJsonAsync("usuario/entrar", usuarioLogin);
@@ -96,10 +99,9 @@ namespace M4.WebApi.Tests.Config
         }
         public async Task<HttpResponseMessage> CadastrarUsuario()
         {
-            var usuario = new UsuarioCadastro { Email = UsuarioEmail, Senha = UsuarioSenha, SenhaConfirmacao = UsuarioSenha, Nome = "Diego", Sobrenome = "Romário" };
             _Context.Database.EnsureDeleted();
             _Context.Database.EnsureCreated();
-            return await Client.PostAsJsonAsync("usuario/cadastrar", usuario);
+            return await Client.PostAsJsonAsync("usuario/cadastrar", UsuarioCadastro);
         }
 
         public void Dispose()

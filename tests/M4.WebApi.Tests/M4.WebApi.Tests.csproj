@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Bogus" Version="33.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="3.1.18" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="3.1.18" />
     <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="3.1.18" />
