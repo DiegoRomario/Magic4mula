@@ -54,6 +54,7 @@ namespace M4.WebApi
             {
                 options.SerializerSettings.Converters.Add(new StringEnumConverter()); options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
+            services.AddApplicationInsightsTelemetry(_configuration.GetConnectionString("ApplicationInsights"));
         }
 
         public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
