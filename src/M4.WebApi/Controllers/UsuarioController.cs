@@ -17,6 +17,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using M4.Infrastructure.Data.Identity;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace M4.WebApi.Controllers
 {
@@ -29,11 +30,12 @@ namespace M4.WebApi.Controllers
         private readonly Urls _uRLs;
         private readonly AppSettings _appSettings;
         private readonly IWebHostEnvironment _iHostingEnvironment;
+        private readonly ILogger<UsuarioController> _logger;
         private readonly bool isTesting;
 
         public UsuarioController(SignInManager<UserIdentity> signInManager,
             UserManager<UserIdentity> userManager,
-            IEmailSender emailSender, IOptions<Urls> URLs, IOptions<AppSettings> appSettings, IWebHostEnvironment iHostingEnvironment)
+            IEmailSender emailSender, IOptions<Urls> URLs, IOptions<AppSettings> appSettings, IWebHostEnvironment iHostingEnvironment, ILogger<UsuarioController> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -42,6 +44,7 @@ namespace M4.WebApi.Controllers
             _appSettings = appSettings.Value;
             _iHostingEnvironment = iHostingEnvironment;
             isTesting = _iHostingEnvironment.EnvironmentName == "Testing";
+            _logger = logger;
         }
         [HttpPost("cadastrar")]
         public async Task<ActionResult> Cadastrar(UsuarioCadastro usuarioCadastro)
@@ -73,7 +76,9 @@ namespace M4.WebApi.Controllers
                 catch (Exception ex)
                 {
                     await _userManager.DeleteAsync(usuario);
-                    AdicionarErro($"Ocorreu um erro durante o cadastro de usuário, por favor entre em contato com o suporte. {ex.Message} || {ex.StackTrace}");
+                    string mensagemDeErro = $"Ocorreu um erro durante o cadastro de usuário, por favor entre em contato com o suporte. - {ex.Message}";
+                    AdicionarErro(mensagemDeErro);
+                    _logger.LogError(ex, mensagemDeErro);
                     return BaseResponse(statusCodeErro: HttpStatusCode.InternalServerError);
                 }
             }
@@ -112,10 +117,10 @@ namespace M4.WebApi.Controllers
                 return BaseResponse(usuario);
             }
 
-            if (result.IsLockedOut) AdicionarErro("Usuário bloqueado por tentativas inválidas. Tente novamente mais tarde.");            
+            if (result.IsLockedOut) AdicionarErro("Usuário bloqueado por tentativas inválidas. Tente novamente mais tarde.");
             else AdicionarErro("Usuário e/ou Senha incorretos");
 
-            return BaseResponse();           
+            return BaseResponse();
 
         }
 
@@ -138,7 +143,9 @@ namespace M4.WebApi.Controllers
             }
             catch (Exception ex)
             {
-                AdicionarErro($"Ocorreu um erro durante o cadastro de usuário, por favor entre em contato com o suporte. {ex.Message} || {ex.StackTrace}");
+                string mensagemDeErro = $"Ocorreu um erro durante o cadastro de usuário, por favor entre em contato com o suporte. - {ex.Message}";
+                AdicionarErro(mensagemDeErro);
+                _logger.LogError(ex, mensagemDeErro);
                 return BaseResponse(statusCodeErro: HttpStatusCode.InternalServerError);
             }
 
@@ -159,7 +166,7 @@ namespace M4.WebApi.Controllers
                 foreach (var error in result.Errors)
                     AdicionarErro(error.Description);
 
-               return BaseResponse(result.Errors);
+                return BaseResponse(result.Errors);
             }
 
             return BaseResponse("Senha redefinida com sucesso.");
