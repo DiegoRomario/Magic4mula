@@ -1,6 +1,8 @@
 ﻿using MailKit.Net.Smtp;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using MimeKit;
+using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -10,17 +12,12 @@ namespace M4.Infrastructure.Services.Email
     public class EmailSender : IEmailSender
     {
         private readonly EmailConfiguration _emailConfig;
+        private readonly ILogger<EmailSender> _logger;
 
-        public EmailSender(IOptions<EmailConfiguration> emailConfig)
+        public EmailSender(IOptions<EmailConfiguration> emailConfig, ILogger<EmailSender> logger)
         {
             _emailConfig = emailConfig.Value;
-        }
-
-        public void SendEmail(EmailMessage message)
-        {
-            var emailMessage = CreateEmailMessage(message);
-
-            Send(emailMessage);
+            _logger = logger;
         }
 
         public async Task SendEmailAsync(EmailMessage message)
@@ -57,29 +54,6 @@ namespace M4.Infrastructure.Services.Email
             return emailMessage;
         }
 
-        private void Send(MimeMessage mailMessage)
-        {
-            using (var client = new SmtpClient())
-            {
-                try
-                {
-                    client.Connect(_emailConfig.SmtpServer, _emailConfig.Port, true);
-                    client.AuthenticationMechanisms.Remove("XOAUTH2");
-                    client.Authenticate(_emailConfig.UserName, _emailConfig.Password);
-                    client.Send(mailMessage);
-                }
-                catch
-                {
-                    throw;
-                }
-                finally
-                {
-                    client.Disconnect(true);
-                    client.Dispose();
-                }
-            }
-        }
-
         private async Task SendAsync(MimeMessage mailMessage)
         {
             using (var client = new SmtpClient())
@@ -92,8 +66,9 @@ namespace M4.Infrastructure.Services.Email
 
                     await client.SendAsync(mailMessage);
                 }
-                catch 
+                catch (Exception ex)
                 {
+                    _logger.LogError(ex, "Ocorreu um erro ao tentar enviar e-mail: " + ex.Message);
                     throw;
                 }
                 finally
