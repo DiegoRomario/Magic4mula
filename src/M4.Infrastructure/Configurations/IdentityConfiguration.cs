@@ -1,5 +1,6 @@
 ﻿using M4.Infrastructure.Configurations.Models;
-using M4.Infrastructure.Data.Identity;
+using M4.Infrastructure.Data.Context;
+using M4.Infrastructure.Data.Models;
 using M4.Infrastructure.Extensions;
 using M4.Infrastructure.Services.Email;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

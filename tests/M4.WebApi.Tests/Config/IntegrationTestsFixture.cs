@@ -1,5 +1,5 @@
 ﻿using Bogus;
-using M4.Infrastructure.Data.Identity;
+using M4.Infrastructure.Data.Context;
 using M4.WebApi.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

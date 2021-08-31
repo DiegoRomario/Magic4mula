@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Linq.Dynamic.Core;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.FeatureManagement.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace M4.WebApi.Controllers
 {
@@ -20,13 +21,15 @@ namespace M4.WebApi.Controllers
         private readonly IAcoesService _acoesService;
         private readonly IMemoryCache _cache;
         private readonly IMapper _mapper;
+        private readonly ILogger<AcaoController> _logger;
         private const string _TODASACOES = "todasacoes";
 
-        public AcaoController(IAcoesService acoesService, IMemoryCache cache, IMapper mapper)
+        public AcaoController(IAcoesService acoesService, IMemoryCache cache, IMapper mapper, ILogger<AcaoController> logger)
         {
             _acoesService = acoesService;
             _cache = cache;
             _mapper = mapper;
+            _logger = logger;
         }
 
 

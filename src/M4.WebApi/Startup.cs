@@ -43,6 +43,7 @@ namespace M4.WebApi
             services.AddCustomHealthChecks(_configuration);
             services.AddSwaggerConfiguration();
             services.AddIdentityConfiguration(_configuration);
+            services.AddEFConfiguration(_configuration);
             services.Configure<Urls>(_configuration.GetSection("Urls"));
             services.Configure<HttpClients>(_configuration.GetSection("HttpClients"));
             services.Configure<EmailConfiguration>(_configuration.GetSection("EmailConfiguration"));
@@ -54,6 +55,7 @@ namespace M4.WebApi
             {
                 options.SerializerSettings.Converters.Add(new StringEnumConverter()); options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
             });
+            services.AddApplicationInsightsTelemetry(_configuration.GetConnectionString("ApplicationInsights"));
         }
 
         public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
