@@ -15,9 +15,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Net;
-using M4.Infrastructure.Data.Identity;
+using M4.Infrastructure.Data.Context;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Logging;
+using M4.Infrastructure.Data.Models;
 
 namespace M4.WebApi.Controllers
 {
