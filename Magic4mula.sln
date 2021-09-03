@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M4.Infrastructure", "src\M4
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M4.WebApi", "src\M4.WebApi\M4.WebApi.csproj", "{65725914-F27B-4D2D-BE31-EF96A79BA888}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "M4.WebApi.Tests", "tests\M4.WebApi.Tests\M4.WebApi.Tests.csproj", "{AB0CE71E-74B3-4452-A5F3-EFFA08BA9C3B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "M4.WebApi.Tests", "tests\M4.WebApi.Tests\M4.WebApi.Tests.csproj", "{AB0CE71E-74B3-4452-A5F3-EFFA08BA9C3B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "M4.Functions", "M4.Functions", "{8E4A1E78-74AB-4E8A-9A34-BC74A7E502D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmailSender", "src\M4.Functions\EmailSender\EmailSender.csproj", "{D8B5939D-FC4C-42AD-B8BF-1068D9DB4362}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +37,16 @@ Global
 		{AB0CE71E-74B3-4452-A5F3-EFFA08BA9C3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB0CE71E-74B3-4452-A5F3-EFFA08BA9C3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB0CE71E-74B3-4452-A5F3-EFFA08BA9C3B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8B5939D-FC4C-42AD-B8BF-1068D9DB4362}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8B5939D-FC4C-42AD-B8BF-1068D9DB4362}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8B5939D-FC4C-42AD-B8BF-1068D9DB4362}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8B5939D-FC4C-42AD-B8BF-1068D9DB4362}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D8B5939D-FC4C-42AD-B8BF-1068D9DB4362} = {8E4A1E78-74AB-4E8A-9A34-BC74A7E502D0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {31A7464C-9E49-48BA-9436-F3953840C3F4}
