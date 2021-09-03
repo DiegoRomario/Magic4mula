@@ -29,6 +29,5 @@ namespace EmailSender
             .AddUserSecrets<Startup>();
         }
 
-
     }
 }

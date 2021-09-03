@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using System;
 using System.Net;
 using System.Net.Mail;
 
@@ -7,13 +9,15 @@ namespace EmailSender.Core
     public class EmailCreator
     {
         private readonly EmailConfiguration _emailConfiguration;
-        public EmailCreator(IOptions<EmailConfiguration> settings)
+        private readonly ILogger<EmailCreator> _logger;
+        public EmailCreator(IOptions<EmailConfiguration> settings, ILogger<EmailCreator> logger)
         {
             _emailConfiguration = settings.Value;
+            _logger = logger;
         }
         public bool SendEmail(string subject, string message, string to)
         {
-
+            _logger.LogInformation($"Criando e-mail as: {DateTime.Now}");
             MailMessage mailMessage = new MailMessage();
             SmtpClient smtpClient = new SmtpClient();
             try
@@ -25,7 +29,7 @@ namespace EmailSender.Core
                     mailMessage.To.Add(item);
                 }
                 mailMessage.Subject = subject;
-                mailMessage.IsBodyHtml = true;
+                mailMessage.IsBodyHtml = false;
                 mailMessage.Body = message;
                 smtpClient.Host = _emailConfiguration.SmtpServer;
                 smtpClient.Port = _emailConfiguration.Port;
@@ -38,8 +42,9 @@ namespace EmailSender.Core
                 return true;
 
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError($"Ocorreu um erro ao criar e-mail: {ex.Message}", ex);
                 throw;
             }
 
