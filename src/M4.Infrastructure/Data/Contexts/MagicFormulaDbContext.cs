@@ -7,10 +7,22 @@ namespace M4.Infrastructure.Data.Context
 {
     public class MagicFormulaDbContext : DbContext
     {
+        private readonly string _connection;
+        public MagicFormulaDbContext(string _con)
+        {
+            _connection = _con;
+        }
         public MagicFormulaDbContext(DbContextOptions<MagicFormulaDbContext> options) : base(options) { }
 
         public DbSet<EmailSolicitacao> EmailSolicitacao { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(_connection);
+            }
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             FieldTypeHandler(modelBuilder, "VARCHAR(100)", typeof(string));
@@ -37,9 +49,6 @@ namespace M4.Infrastructure.Data.Context
                 property.SetColumnType(sqlFieldType);
             }
         }
-
-
-
 
     }
 }

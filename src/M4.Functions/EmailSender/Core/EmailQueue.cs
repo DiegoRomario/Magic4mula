@@ -1,7 +1,7 @@
 ﻿using M4.Infrastructure.Data.Context;
 using M4.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Configuration;
 using System;
 using System.Linq;
 
@@ -9,21 +9,19 @@ namespace EmailSender.Core
 {
     public class EmailQueue
     {
-        private readonly DbContextOptions<MagicFormulaDbContext> _optionsBuilder;
         private readonly EmailCreator _emailCreator;
-        private readonly ILogger<EmailQueue> _logger;
+        private readonly IConfiguration _configuration;
 
-        public EmailQueue(EmailCreator emailCreator, ILogger<EmailQueue> logger)
+        public EmailQueue(EmailCreator emailCreator, IConfiguration configuration)
         {
-            _optionsBuilder = new DbContextOptions<MagicFormulaDbContext>();
             _emailCreator = emailCreator;
-            _logger = logger;
+            _configuration = configuration;
         }
 
         public void DequeueEmail()
         {
-            using var dataBase = new MagicFormulaDbContext(_optionsBuilder);
-
+            var connectionString = _configuration.GetConnectionString("MagicFormulaSQLServer"); 
+            using var dataBase = new MagicFormulaDbContext(connectionString);
             var emailRequests = dataBase.Set<EmailSolicitacao>()
                 .Where(s => !s.Enviado).AsNoTracking().ToList();
 
@@ -31,17 +29,14 @@ namespace EmailSender.Core
             {
                 try
                 {
-                    _emailCreator.SendEmail(request.Titulo, request.Mensagem,
-                        request.Destinatarios);
+                    _emailCreator.SendEmail(request.Titulo, request.Mensagem, request.Destinatarios);
                     request.DataEnvio = DateTime.Now;
                     request.Enviado = true;
                     dataBase.EmailSolicitacao.Update(request);
                     dataBase.SaveChanges();
-
                 }
-                catch (Exception ex)
+                catch 
                 {
-                    _logger.LogError(ex, $"Ocorreu um erro ao tentar enviar o item {request.Id} da fila de e-mail: " + ex.Message);
                     throw;
                 }
 
