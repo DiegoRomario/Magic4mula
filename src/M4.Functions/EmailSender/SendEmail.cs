@@ -15,7 +15,7 @@ namespace EmailSender
         [FunctionName("SendEmail")]
         public void Run([TimerTrigger("*/30 * * * * *")] TimerInfo myTimer, ILogger log, ExecutionContext context)
         {            
-            log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+            log.LogInformation($"Iniciando função para envio de e-mails as: {DateTime.Now}");
             _EmailQueue.DequeueEmail();
         }
     }
