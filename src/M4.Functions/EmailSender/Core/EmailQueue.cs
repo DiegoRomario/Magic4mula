@@ -23,13 +23,12 @@ namespace EmailSender.Core
 
         public void DequeueEmail()
         {
-
             var connectionString = _configuration.GetConnectionString("MagicFormulaSQLServer"); 
             using var dataBase = new MagicFormulaDbContext(connectionString);
             var emailRequests = dataBase.Set<EmailSolicitacao>()
                 .Where(s => !s.Enviado).AsNoTracking().ToList();
 
-            _logger.LogInformation($"Começando a enviar e-mails as: {DateTime.Now}");
+            _logger.LogInformation($"Existem {emailRequests.Count} para serem enviados: {DateTime.Now}");
             foreach (var request in emailRequests)
             {
                 try

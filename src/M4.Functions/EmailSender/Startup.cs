@@ -1,4 +1,7 @@
-﻿using EmailSender;
+﻿using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using EmailSender;
 using EmailSender.Core;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -28,9 +31,17 @@ namespace EmailSender
             .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
             .AddEnvironmentVariables()
             .AddUserSecrets<Startup>();
-            IConfigurationRoot configuration =  configurationBuilder.Build();
+            IConfigurationRoot configuration = configurationBuilder.Build();
             var csAppConfig = configuration["ConnectionStrings:AppConfig"];
             builder.ConfigurationBuilder.AddAzureAppConfiguration(csAppConfig);
+            configuration = builder.ConfigurationBuilder.Build();
+            var kvURL = configuration["KeyVaultConfig:KVUrl"];
+            var tenantId = configuration["KeyVaultConfig:TenantId"];
+            var clientId = configuration["KeyVaultConfig:ClientId"];
+            var clientSecret = configuration["KeyVaultConfig:ClientSecretId"];
+            var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+            var client = new SecretClient(new Uri(kvURL), credential);
+            builder.ConfigurationBuilder.AddAzureKeyVault(client, new AzureKeyVaultConfigurationOptions());
         }
 
     }
