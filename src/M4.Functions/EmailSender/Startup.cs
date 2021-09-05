@@ -1,6 +1,11 @@
-﻿using EmailSender;
+﻿using Azure.Extensions.AspNetCore.Configuration.Secrets;
+using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
+using EmailSender;
 using EmailSender.Core;
+using M4.Infrastructure.Data.Context;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -11,8 +16,11 @@ namespace EmailSender
 {
     public class Startup : FunctionsStartup
     {
+        public IConfigurationRoot _configuration { get; set; }
         public override void Configure(IFunctionsHostBuilder builder)
         {
+            builder.Services.AddDbContext<MagicFormulaDbContext>(options =>
+            options.UseSqlServer(_configuration.GetConnectionString("MagicFormulaSQLServer")));
             builder.Services.AddTransient<EmailQueue>();
             builder.Services.AddTransient<EmailCreator>();
             builder.Services.AddOptions<EmailConfiguration>()
@@ -28,9 +36,17 @@ namespace EmailSender
             .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
             .AddEnvironmentVariables()
             .AddUserSecrets<Startup>();
-            IConfigurationRoot configuration =  configurationBuilder.Build();
-            var csAppConfig = configuration["ConnectionStrings:AppConfig"];
+            _configuration = configurationBuilder.Build();
+            var csAppConfig = _configuration["ConnectionStrings:AppConfig"];
             builder.ConfigurationBuilder.AddAzureAppConfiguration(csAppConfig);
+            _configuration = builder.ConfigurationBuilder.Build();
+            var kvURL = _configuration["KeyVaultConfig:KVUrl"];
+            var tenantId = _configuration["KeyVaultConfig:TenantId"];
+            var clientId = _configuration["KeyVaultConfig:ClientId"];
+            var clientSecret = _configuration["KeyVaultConfig:ClientSecretId"];
+            var credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+            var client = new SecretClient(new Uri(kvURL), credential);
+            _configuration = builder.ConfigurationBuilder.AddAzureKeyVault(client, new AzureKeyVaultConfigurationOptions()).Build();
         }
 
     }

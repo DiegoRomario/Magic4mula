@@ -13,23 +13,22 @@ namespace EmailSender.Core
         private readonly EmailCreator _emailCreator;
         private readonly IConfiguration _configuration;
         private readonly ILogger<EmailQueue> _logger;
+        private readonly MagicFormulaDbContext _magicFormulaDbContext;
 
-        public EmailQueue(EmailCreator emailCreator, IConfiguration configuration, ILogger<EmailQueue> logger)
+        public EmailQueue(EmailCreator emailCreator, IConfiguration configuration, ILogger<EmailQueue> logger, MagicFormulaDbContext magicFormulaDbContext)
         {
             _emailCreator = emailCreator;
             _configuration = configuration;
             _logger = logger;
+            _magicFormulaDbContext = magicFormulaDbContext;
         }
 
         public void DequeueEmail()
         {
-
-            var connectionString = _configuration.GetConnectionString("MagicFormulaSQLServer"); 
-            using var dataBase = new MagicFormulaDbContext(connectionString);
-            var emailRequests = dataBase.Set<EmailSolicitacao>()
+            var emailRequests = _magicFormulaDbContext.Set<EmailSolicitacao>()
                 .Where(s => !s.Enviado).AsNoTracking().ToList();
 
-            _logger.LogInformation($"Começando a enviar e-mails as: {DateTime.Now}");
+            _logger.LogInformation($"Existem {emailRequests.Count} para serem enviados: {DateTime.Now}");
             foreach (var request in emailRequests)
             {
                 try
@@ -37,8 +36,8 @@ namespace EmailSender.Core
                     _emailCreator.SendEmail(request.Titulo, request.Mensagem, request.Destinatarios);
                     request.DataEnvio = DateTime.Now;
                     request.Enviado = true;
-                    dataBase.EmailSolicitacao.Update(request);
-                    dataBase.SaveChanges();
+                    _magicFormulaDbContext.EmailSolicitacao.Update(request);
+                    _magicFormulaDbContext.SaveChanges();
                 }
                 catch (Exception ex)
                 {
