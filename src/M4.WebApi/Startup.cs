@@ -11,6 +11,7 @@ using M4.WebApi.Configurations;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Converters;
 using Microsoft.FeatureManagement;
+using M4.Domain.Interfaces;
 
 namespace M4.WebApi
 {
@@ -47,7 +48,7 @@ namespace M4.WebApi
             services.Configure<Urls>(_configuration.GetSection("Urls"));
             services.Configure<HttpClients>(_configuration.GetSection("HttpClients"));
             services.Configure<EmailConfiguration>(_configuration.GetSection("EmailConfiguration"));
-            services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IEmailQueue, EmailQueue>();
             services.AddAutoMapperProfile();
             services.AddHttpClients();
             services.RegistryServices();

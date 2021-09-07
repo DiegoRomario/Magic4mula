@@ -1,4 +1,5 @@
-﻿using M4.Infrastructure.Data.Models;
+﻿using M4.Domain.Entities;
+using M4.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Linq;

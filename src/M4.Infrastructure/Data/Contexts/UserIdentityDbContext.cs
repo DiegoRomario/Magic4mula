@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using M4.Infrastructure.Data.Models;
+using M4.Domain.Entities;
 
 namespace M4.Infrastructure.Data.Context
 {
