@@ -1,4 +1,4 @@
-﻿namespace EmailSender.Core
+﻿namespace M4.Infrastructure.Configurations.Models
 {
     public class EmailConfiguration
     {

@@ -11,6 +11,10 @@ using M4.WebApi.Configurations;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Converters;
 using Microsoft.FeatureManagement;
+using M4.Domain.Interfaces;
+using M4.Infrastructure.Data.Context;
+using Microsoft.EntityFrameworkCore;
+using M4.Domain.Core;
 
 namespace M4.WebApi
 {
@@ -43,11 +47,14 @@ namespace M4.WebApi
             services.AddCustomHealthChecks(_configuration);
             services.AddSwaggerConfiguration();
             services.AddIdentityConfiguration(_configuration);
+            services.AddDbContext<MagicFormulaDbContext>(options => options.UseSqlServer(_configuration.GetConnectionString("MagicFormulaSQLServer")));
+            services.AddTransient<IEmailQueue, EmailQueue>();
+            services.AddTransient<IEmailCreator, EmailCreator>();
             services.AddEFConfiguration(_configuration);
             services.Configure<Urls>(_configuration.GetSection("Urls"));
             services.Configure<HttpClients>(_configuration.GetSection("HttpClients"));
             services.Configure<EmailConfiguration>(_configuration.GetSection("EmailConfiguration"));
-            services.AddScoped<IEmailSender, EmailSender>();
+            services.AddScoped<IEmailQueue, EmailQueue>();
             services.AddAutoMapperProfile();
             services.AddHttpClients();
             services.RegistryServices();

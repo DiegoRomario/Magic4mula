@@ -11,10 +11,9 @@ namespace M4.Infrastructure.Migrations.MagicFormulaDb
                 name: "EmailSolicitacao",
                 columns: table => new
                 {
-                    Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(nullable: false),
                     Titulo = table.Column<string>(type: "VARCHAR(100)", nullable: false),
-                    Mensagem = table.Column<string>(type: "VARCHAR(100)", nullable: false),
+                    Mensagem = table.Column<string>(type: "VARCHAR(1024)", nullable: false),
                     Destinatarios = table.Column<string>(type: "VARCHAR(100)", nullable: false),
                     DataEnvio = table.Column<DateTime>(type: "DATETIME", nullable: false),
                     Enviado = table.Column<bool>(nullable: false)

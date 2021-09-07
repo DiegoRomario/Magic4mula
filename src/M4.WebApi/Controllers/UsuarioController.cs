@@ -1,24 +1,24 @@
-﻿using System;
+﻿using M4.Domain.Entities;
+using M4.Domain.Interfaces;
+using M4.Infrastructure.Configurations.Models;
+using M4.Infrastructure.Data.Models;
+using M4.Infrastructure.Models;
+using M4.WebApi.Models;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using M4.Infrastructure.Configurations.Models;
-using M4.Infrastructure.Services.Email;
-using M4.Infrastructure.Models;
-using M4.WebApi.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.Net;
-using M4.Infrastructure.Data.Context;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Logging;
-using M4.Infrastructure.Data.Models;
 
 namespace M4.WebApi.Controllers
 {
@@ -27,7 +27,7 @@ namespace M4.WebApi.Controllers
     {
         private readonly SignInManager<UserIdentity> _signInManager;
         private readonly UserManager<UserIdentity> _userManager;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailQueue _emailQueue;
         private readonly Urls _uRLs;
         private readonly AppSettings _appSettings;
         private readonly IWebHostEnvironment _iHostingEnvironment;
@@ -36,11 +36,11 @@ namespace M4.WebApi.Controllers
 
         public UsuarioController(SignInManager<UserIdentity> signInManager,
             UserManager<UserIdentity> userManager,
-            IEmailSender emailSender, IOptions<Urls> URLs, IOptions<AppSettings> appSettings, IWebHostEnvironment iHostingEnvironment, ILogger<UsuarioController> logger)
+            IEmailQueue emailSender, IOptions<Urls> URLs, IOptions<AppSettings> appSettings, IWebHostEnvironment iHostingEnvironment, ILogger<UsuarioController> logger)
         {
             _signInManager = signInManager;
             _userManager = userManager;
-            _emailSender = emailSender;
+            _emailQueue = emailSender;
             _uRLs = URLs.Value;
             _appSettings = appSettings.Value;
             _iHostingEnvironment = iHostingEnvironment;
@@ -70,9 +70,9 @@ namespace M4.WebApi.Controllers
                     string token = await _userManager.GenerateEmailConfirmationTokenAsync(usuario);
                     token = HttpUtility.UrlEncode(token);
                     string urlConfirmacao = string.Format(_uRLs.ConfirmacaoEmail, usuario.Email, token);
-                    EmailMessage message = new EmailMessage(new string[] { usuario.Email }, "Confirmação de e-mail", urlConfirmacao, null);
-                    await _emailSender.SendEmailAsync(message);
-                    return BaseResponse("Usuário cadastrado com sucesso! Um e-mail foi enviado para confirmação do cadastro.");
+                    EmailSolicitacao message = new EmailSolicitacao("Confirmação de e-mail", urlConfirmacao, usuario.Email);
+                    await _emailQueue.EnqueueEmailAsync(message);
+                    return BaseResponse("Usuário cadastrado com sucesso! Um e-mail será enviado para confirmação do cadastro.");
                 }
                 catch (Exception ex)
                 {
@@ -138,9 +138,9 @@ namespace M4.WebApi.Controllers
                 string token = await _userManager.GeneratePasswordResetTokenAsync(usuario);
                 token = HttpUtility.UrlEncode(token);
                 string urlConfirmacao = string.Format(_uRLs.CadastroNovaSenha, usuario.Email, token);
-                EmailMessage message = new EmailMessage(new string[] { usuario.Email }, "Redefinição de senha", urlConfirmacao, null);
-                await _emailSender.SendEmailAsync(message);
-                return BaseResponse("E-mail com link para redefinição de senha enviado com sucesso.");
+                EmailSolicitacao message = new EmailSolicitacao("Redefinição de senha", urlConfirmacao, usuario.Email);
+                await _emailQueue.EnqueueEmailAsync(message);
+                return BaseResponse("Um e-mail com link para redefinição de senha será enviado.");
             }
             catch (Exception ex)
             {
