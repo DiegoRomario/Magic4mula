@@ -19,12 +19,11 @@ namespace M4.Infrastructure.Migrations.MagicFormulaDb
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("M4.Infrastructure.Data.Models.EmailSolicitacao", b =>
+            modelBuilder.Entity("M4.Domain.Entities.EmailSolicitacao", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("DataEnvio")
                         .HasColumnType("DATETIME");
@@ -38,7 +37,7 @@ namespace M4.Infrastructure.Migrations.MagicFormulaDb
 
                     b.Property<string>("Mensagem")
                         .IsRequired()
-                        .HasColumnType("VARCHAR(100)");
+                        .HasColumnType("VARCHAR(1024)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()

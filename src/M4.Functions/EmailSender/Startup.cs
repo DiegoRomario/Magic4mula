@@ -24,8 +24,8 @@ namespace EmailSender
         {
             builder.Services.AddDbContext<MagicFormulaDbContext>(options =>
             options.UseSqlServer(_configuration.GetConnectionString("MagicFormulaSQLServer")));
-            builder.Services.AddTransient<IEmailQueue,EmailQueue>();
-            builder.Services.AddTransient<IEmailCreator,EmailCreator>();
+            builder.Services.AddTransient<IEmailQueue, EmailQueue>();
+            builder.Services.AddTransient<IEmailCreator, EmailCreator>();
             builder.Services.AddOptions<EmailConfiguration>()
             .Configure<IConfiguration>((settings, configuration) =>
             {
