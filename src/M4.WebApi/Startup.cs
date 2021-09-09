@@ -47,10 +47,9 @@ namespace M4.WebApi
             services.AddCustomHealthChecks(_configuration);
             services.AddSwaggerConfiguration();
             services.AddIdentityConfiguration(_configuration);
-            services.AddDbContext<MagicFormulaDbContext>(options => options.UseSqlServer(_configuration.GetConnectionString("MagicFormulaSQLServer")));
+            services.AddEFConfiguration(_configuration);
             services.AddTransient<IEmailQueue, EmailQueue>();
             services.AddTransient<IEmailCreator, EmailCreator>();
-            services.AddEFConfiguration(_configuration);
             services.Configure<Urls>(_configuration.GetSection("Urls"));
             services.Configure<HttpClients>(_configuration.GetSection("HttpClients"));
             services.Configure<EmailConfiguration>(_configuration.GetSection("EmailConfiguration"));

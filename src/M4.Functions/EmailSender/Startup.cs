@@ -4,11 +4,10 @@ using Azure.Security.KeyVault.Secrets;
 using EmailSender;
 using M4.Domain.Core;
 using M4.Domain.Interfaces;
+using M4.Infrastructure.Configurations;
 using M4.Infrastructure.Configurations.Models;
-using M4.Infrastructure.Data.Context;
 using M4.Infrastructure.Services.Email;
 using Microsoft.Azure.Functions.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -22,8 +21,7 @@ namespace EmailSender
         public IConfigurationRoot _configuration { get; set; }
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            builder.Services.AddDbContext<MagicFormulaDbContext>(options =>
-            options.UseSqlServer(_configuration.GetConnectionString("MagicFormulaSQLServer")));
+            builder.Services.AddEFConfiguration(_configuration);
             builder.Services.AddTransient<IEmailQueue, EmailQueue>();
             builder.Services.AddTransient<IEmailCreator, EmailCreator>();
             builder.Services.AddOptions<EmailConfiguration>()
