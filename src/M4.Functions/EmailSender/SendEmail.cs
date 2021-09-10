@@ -1,7 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using EmailSender.Models;
 using M4.Domain.Interfaces;
-using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace EmailSender
@@ -13,10 +14,12 @@ namespace EmailSender
         {
             this._EmailQueue = emailQueue;
         }
-        [FunctionName("SendEmail")]
-        public async Task Run([TimerTrigger("*/30 * * * * *")] TimerInfo myTimer, ILogger log, ExecutionContext context)
+        [Function("SendEmail")]
+        public async Task Run([TimerTrigger("* */2 * * * *")] MyInfo myTimer, FunctionContext context)
         {
-            log.LogInformation($"Iniciando funÃ§Ã£o para envio de e-mails as: {DateTime.Now}");
+            var logger = context.GetLogger("SendEmail");
+            logger.LogInformation($"Iniciando função para envio de e-mails as: {DateTime.Now}");
+            logger.LogInformation($"Proxima execução as: {myTimer.ScheduleStatus.Next}");
             await _EmailQueue.DequeueEmailAsync();
         }
     }
