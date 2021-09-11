@@ -54,8 +54,9 @@ jobs:
       - name: copy file
         uses: canastro/copy-file-action@master
         with:
-          source: "extensions/demo.dll"
-          target: "./out/demo.dll"
+          source: extensions/.
+          target: ./out/
+          flags: '-r'
 
       - name: Deploy to Azure Web Apps 🚢
         uses: azure/webapps-deploy@v2
