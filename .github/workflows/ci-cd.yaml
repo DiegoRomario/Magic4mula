@@ -51,6 +51,12 @@ jobs:
       - name: Publish app 📰
         run: dotnet publish -c Release -o ./out
 
+      - name: copy file
+        uses: canastro/copy-file-action@master
+        with:
+          source: "extensions/demo.dll"
+          target: "./out/demo.dll"
+
       - name: Deploy to Azure Web Apps 🚢
         uses: azure/webapps-deploy@v2
         with:

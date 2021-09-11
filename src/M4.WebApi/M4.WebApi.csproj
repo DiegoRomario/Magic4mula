@@ -25,18 +25,4 @@
     <ProjectReference Include="..\M4.Infrastructure\M4.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ContentWithTargetPath Include="Extensions\Microsoft.Extensions.DependencyInjection.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>Microsoft.Extensions.DependencyInjection.dll</TargetPath>
-    </ContentWithTargetPath>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ContentWithTargetPath Include="Extensions\Newtonsoft.Json.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <TargetPath>Newtonsoft.Json.dll</TargetPath>
-    </ContentWithTargetPath>
-  </ItemGroup>
-
 </Project>
