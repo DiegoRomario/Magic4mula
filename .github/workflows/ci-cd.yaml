@@ -6,7 +6,8 @@ on:
       - development
 
 env:
-  DOTNET_VERSION: '5.0.302'
+  DOTNET3_VERSION: '3.1.412'
+  DOTNET5_VERSION: '5.0.302'
   AZURE_WEBAPP_NAME: magicformula-webapi
 
 jobs:
@@ -15,11 +16,16 @@ jobs:
     steps:
       - name: Checkout code 🔎
         uses: actions/checkout@v2
+
+      - name: Setup .NET Core 3.1 🔧
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ env.DOTNET3_VERSION }}
       
       - name: Setup .NET 5.0 🔧
         uses: actions/setup-dotnet@v1
         with:
-          dotnet-version: ${{ env.DOTNET_VERSION }}
+          dotnet-version: ${{ env.DOTNET5_VERSION }}
           
       - name: Start SQL Server 🎲
         run: |
