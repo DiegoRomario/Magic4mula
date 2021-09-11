@@ -31,7 +31,7 @@ jobs:
         run: |
           docker run -d -e 'ACCEPT_EULA=Y' -e 'SA_PASSWORD=Testing@666' -e 'MSSQL_PID=Express' -p 1433:1433 -d mcr.microsoft.com/mssql/server:latest
 
-      - name: Sleeping for 10 seconds 😴
+      - name: Sleep for 10 seconds 😴
         uses: jakejarvis/wait-action@master
         with:
           time: '10s'
@@ -51,10 +51,10 @@ jobs:
       - name: Publish app 📰
         run: dotnet publish -c Release -o ./out
 
-      - name: copy file
+      - name: Copy dependencies 📋
         uses: canastro/copy-file-action@master
         with:
-          source: extensions/.
+          source: dependencies/.
           target: ./out/
           flags: '-r'
 
