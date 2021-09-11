@@ -6,7 +6,7 @@ on:
       - development
 
 env:
-  DOTNET_VERSION: '3.1.x'
+  DOTNET_VERSION: '5.0.x'
   AZURE_WEBAPP_NAME: magicformula-webapi
 
 jobs:
@@ -16,7 +16,7 @@ jobs:
       - name: Checkout code 🔎
         uses: actions/checkout@v2
       
-      - name: Setup .NET Core 3.1 🔧
+      - name: Setup .NET 5.0 🔧
         uses: actions/setup-dotnet@v1
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}

@@ -45,8 +45,6 @@ namespace M4.WebApi.Configurations
                 });
 
             });
-            services.AddSwaggerGenNewtonsoftSupport();
-
             return services;
         }
 
