@@ -9,12 +9,11 @@ using Microsoft.Extensions.Hosting;
 using M4.Infrastructure.Configurations.Models;
 using M4.WebApi.Configurations;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Converters;
 using Microsoft.FeatureManagement;
 using M4.Domain.Interfaces;
-using M4.Infrastructure.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using M4.Domain.Core;
+using System.Text.Json.Serialization;
 
 namespace M4.WebApi
 {
@@ -57,9 +56,9 @@ namespace M4.WebApi
             services.AddAutoMapperProfile();
             services.AddHttpClients();
             services.RegistryServices();
-            services.AddControllers().AddNewtonsoftJson(options =>
+            services.AddControllers().AddJsonOptions(options =>
             {
-                options.SerializerSettings.Converters.Add(new StringEnumConverter()); options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
             services.AddApplicationInsightsTelemetry(_configuration.GetConnectionString("ApplicationInsights"));
         }
