@@ -25,7 +25,4 @@
     <ProjectReference Include="..\M4.Infrastructure\M4.Infrastructure.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Config\" />
-  </ItemGroup>
 </Project>
