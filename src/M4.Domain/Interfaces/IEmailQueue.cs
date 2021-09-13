@@ -1,5 +1,4 @@
 ﻿using M4.Domain.Entities;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace M4.Domain.Interfaces
@@ -8,6 +7,5 @@ namespace M4.Domain.Interfaces
     {
         Task DequeueEmailAsync();
         Task EnqueueEmailAsync(EmailSolicitacao emailSolicitacao);
-        Task<IList<EmailSolicitacao>> GetUnqueuedEmails();
     }
 }
