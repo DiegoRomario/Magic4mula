@@ -30,7 +30,6 @@ namespace M4.Infrastructure.Services.Email
             var ConnectionStringBus = _configuration.GetConnectionString("MagicFormulaServiceBus");
             _queueClient = new QueueClient(ConnectionStringBus, QUEUE_NAME);
         }
-
         public async Task EnqueueEmailAsync(EmailSolicitacao emailSolicitacao)
         {
             try
@@ -61,6 +60,7 @@ namespace M4.Infrastructure.Services.Email
         private async Task ProcessMessageHandler(Message message, CancellationToken cancellationToken)
         {
             var messageString = Encoding.UTF8.GetString(message.Body);
+
             EmailSolicitacao emailSolicitacao = JsonSerializer.Deserialize<EmailSolicitacao>(messageString);
             try
             {
