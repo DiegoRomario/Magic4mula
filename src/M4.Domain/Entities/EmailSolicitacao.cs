@@ -12,15 +12,10 @@ namespace M4.Domain.Entities
             Destinatarios = destinatarios;
             DataEnvio = DateTime.Now;
         }
-        public string Titulo { get; private set; }
-        public string Mensagem { get; private set; }
-        public string Destinatarios { get; private set; }
-        public DateTime DataEnvio { get; private set; }
-        public bool Enviado { get; private set ; }
-
-        public void MarcarEmailComoEnviado()
-        {
-            Enviado = true;
-        }
+        public string Titulo { get; init; }
+        public string Mensagem { get; init; }
+        public string Destinatarios { get; init; }
+        public DateTime DataEnvio { get; init; }
+        public bool Enviado { get; init ; }
     }
 }
