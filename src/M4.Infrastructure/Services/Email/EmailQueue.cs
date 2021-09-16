@@ -19,7 +19,7 @@ namespace M4.Infrastructure.Services.Email
         private readonly IEmailCreator _emailCreator;
         private readonly ILogger<EmailQueue> _logger;
         private readonly IConfiguration _configuration;
-        private readonly QueueClient _queueClient;
+        private QueueClient _queueClient;
 
 
         public EmailQueue(IEmailCreator emailCreator, ILogger<EmailQueue> logger, IConfiguration configuration)
@@ -27,11 +27,17 @@ namespace M4.Infrastructure.Services.Email
             _emailCreator = emailCreator;
             _logger = logger;
             _configuration = configuration;
-            var ConnectionStringBus = _configuration.GetConnectionString("MagicFormulaServiceBus");
+        }
+
+        private void CreateQueueClient()
+        {
+            string ConnectionStringBus = _configuration.GetConnectionString("MagicFormulaServiceBus");
             _queueClient = new QueueClient(ConnectionStringBus, QUEUE_NAME);
         }
+
         public async Task EnqueueEmailAsync(EmailSolicitacao emailSolicitacao)
         {
+            CreateQueueClient();
             try
             {
                 string emailSolicitacaoJson = JsonSerializer.Serialize(emailSolicitacao);
@@ -49,6 +55,7 @@ namespace M4.Infrastructure.Services.Email
 
        public async Task DequeueEmailAsync()
         {
+            CreateQueueClient();
             var messageHandlerOptions = new MessageHandlerOptions(ExceptionHandler)
             {
                 AutoComplete = false
