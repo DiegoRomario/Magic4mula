@@ -1,5 +1,11 @@
+using M4.Domain.Entities;
+using M4.Domain.Interfaces;
+using M4.Infrastructure.Services.Email;
 using M4.WebApi.Models;
 using M4.WebApi.Tests.Config;
+using Microsoft.Azure.ServiceBus;
+using Moq;
+using Moq.AutoMock;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -14,9 +20,14 @@ namespace M4.WebApi.Tests
     public class IntegrationTests
     {
         private readonly IntegrationTestsFixture<StartupTesting> _testsFixture;
+        public readonly EmailQueue EmailQueueMock;
+        public readonly AutoMocker Mocker;
+
 
         public IntegrationTests(IntegrationTestsFixture<StartupTesting> testsFixture)
         {
+            Mocker = new AutoMocker();
+            EmailQueueMock = Mocker.CreateInstance<EmailQueue>();
             _testsFixture = testsFixture;
         }
 
