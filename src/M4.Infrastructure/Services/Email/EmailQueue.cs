@@ -15,7 +15,7 @@ namespace M4.Infrastructure.Services.Email
 {
     public class EmailQueue : IEmailQueue
     {
-        private const string QUEUE_NAME = "email-queue";
+        private const string QUEUE_NAME = "queue-email";
         private readonly IEmailCreator _emailCreator;
         private readonly ILogger<EmailQueue> _logger;
         private readonly IConfiguration _configuration;
