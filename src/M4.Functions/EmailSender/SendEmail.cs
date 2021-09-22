@@ -15,12 +15,12 @@ namespace EmailSender
             this._EmailQueue = emailQueue;
         }
         [Function("SendEmail")]
-        public async Task Run([TimerTrigger("0 */3 * * * *")] MyInfo myTimer, FunctionContext context)
+        public async Task Run([TimerTrigger("0 */2 * * * *")] MyInfo myTimer, FunctionContext context)
         {
             var logger = context.GetLogger("SendEmail");
-            logger.LogInformation($"Iniciando função para envio de e-mails as: {DateTime.Now}");
-            logger.LogInformation($"Proxima execução as: {myTimer.ScheduleStatus.Next}");
+            logger.LogInformation($"Iniciando função para envio de e-mails as: {DateTime.Now}");            
             await _EmailQueue.DequeueEmailAsync();
+            logger.LogInformation($"Proxima execução as: {myTimer.ScheduleStatus.Next}");
         }
     }
 }
