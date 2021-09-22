@@ -7,7 +7,7 @@ on:
 
 env:
   DOTNET3_VERSION: '3.1.412'
-  DOTNET5_VERSION: '5.0.302'
+  DOTNET5_VERSION: '5.0.401'
   AZURE_WEBAPP_NAME: magicformula-webapi
 
 jobs:
