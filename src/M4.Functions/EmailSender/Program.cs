@@ -32,7 +32,6 @@ namespace EmailSender
             services.AddEFConfiguration(_configuration);
             services.AddTransient<IEmailQueue, EmailQueue>();
             services.AddTransient<IEmailCreator, EmailCreator>();
-            services.AddApplicationInsightsTelemetry(_configuration.GetConnectionString("ApplicationInsightsEmailSender"));
             services.AddOptions<EmailConfiguration>()
             .Configure<IConfiguration>((settings, configuration) =>
             {
