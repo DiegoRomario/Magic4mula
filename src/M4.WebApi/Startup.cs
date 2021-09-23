@@ -60,7 +60,7 @@ namespace M4.WebApi
             {
                 options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
-            services.AddApplicationInsightsTelemetry(_configuration.GetConnectionString("ApplicationInsights"));
+            services.AddApplicationInsightsTelemetry(_configuration.GetConnectionString("ApplicationInsightsMagicFormulaWebApi"));
         }
 
         public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
