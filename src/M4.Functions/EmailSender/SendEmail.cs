@@ -17,10 +17,21 @@ namespace EmailSender
         [Function("SendEmail")]
         public async Task Run([TimerTrigger("0 */2 * * * *")] MyInfo myTimer, FunctionContext context)
         {
-            var logger = context.GetLogger("SendEmail");
-            logger.LogInformation($"Executando rotina as: {DateTime.Now}");
-            await _EmailQueue.DequeueEmailAsync();
-            logger.LogInformation($"Proxima execução as: {myTimer.ScheduleStatus.Next}");
+            ILogger logger = context.GetLogger("SendEmail");
+            try
+            {
+                logger.LogDebug($"Executando rotina as: {DateTime.Now}");
+                await _EmailQueue.DequeueEmailAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, $"Ocorreu o erro: {ex.Message} as: {DateTime.Now} ao tentar processar a função");
+            }
+            finally
+            {
+                logger.LogInformation($"Proxima execução as: {myTimer.ScheduleStatus.Next}");
+            }
+
         }
     }
 }

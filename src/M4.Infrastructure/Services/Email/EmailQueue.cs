@@ -1,4 +1,5 @@
-﻿using M4.Domain.Core;
+﻿using Azure.Messaging.ServiceBus;
+using M4.Domain.Core;
 using M4.Domain.Entities;
 using M4.Domain.Interfaces;
 using Microsoft.Azure.ServiceBus;
@@ -10,6 +11,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace M4.Infrastructure.Services.Email
 {
@@ -19,7 +21,7 @@ namespace M4.Infrastructure.Services.Email
         private readonly IEmailCreator _emailCreator;
         private readonly ILogger<EmailQueue> _logger;
         private readonly IConfiguration _configuration;
-        private QueueClient _queueClient;
+        private readonly ServiceBusClient _serviceBusClient;
 
 
         public EmailQueue(IEmailCreator emailCreator, ILogger<EmailQueue> logger, IConfiguration configuration)
@@ -27,64 +29,48 @@ namespace M4.Infrastructure.Services.Email
             _emailCreator = emailCreator;
             _logger = logger;
             _configuration = configuration;
-        }
-
-        private void CreateQueueClient()
-        {
-            string ConnectionStringBus = _configuration.GetConnectionString("MagicFormulaServiceBus");
-            _queueClient = new QueueClient(ConnectionStringBus, QUEUE_NAME);
+            var cs = _configuration.GetConnectionString("MagicFormulaServiceBus");
+            _serviceBusClient = new(cs);
         }
 
         public async Task EnqueueEmailAsync(EmailSolicitacao emailSolicitacao)
         {
-            CreateQueueClient();
+            
             try
             {
+                ServiceBusSender sender = _serviceBusClient.CreateSender(QUEUE_NAME);
                 string emailSolicitacaoJson = JsonSerializer.Serialize(emailSolicitacao);
                 byte[] emailSolicitacaoBytes = Encoding.UTF8.GetBytes(emailSolicitacaoJson);
-                Message message = new(emailSolicitacaoBytes);
+                ServiceBusMessage message = new(emailSolicitacaoBytes);
                 _logger.LogInformation($"Enfileirando E-mail Id: {emailSolicitacao.Id}");
-                await _queueClient.SendAsync(message);
+                await sender.SendMessageAsync(message);
             }
-            catch (Exception ex)
+            catch 
             {
-                _logger.LogError($"Ocorreu um erro ao adicionar e-mail Id: {emailSolicitacao.Id} a fila: {ex.Message}", ex);
+                throw;
             }
 
         }
 
        public async Task DequeueEmailAsync()
         {
-            CreateQueueClient();
-            var messageHandlerOptions = new MessageHandlerOptions(ExceptionHandler)
-            {
-                AutoComplete = false
-            };
-            _queueClient.RegisterMessageHandler(ProcessMessageHandler, messageHandlerOptions);
-            await Task.CompletedTask;
-        }
-
-        private async Task ProcessMessageHandler(Message message, CancellationToken cancellationToken)
-        {
-            var messageString = Encoding.UTF8.GetString(message.Body);
-
-            EmailSolicitacao emailSolicitacao = JsonSerializer.Deserialize<EmailSolicitacao>(messageString);
             try
             {
+                ServiceBusReceiver receiver = _serviceBusClient.CreateReceiver(QUEUE_NAME);
+                ServiceBusReceivedMessage message = await receiver.ReceiveMessageAsync();
+                using TransactionScope scope = new (TransactionScopeAsyncFlowOption.Enabled);
+                var messageString = Encoding.UTF8.GetString(message.Body);
+                EmailSolicitacao emailSolicitacao = JsonSerializer.Deserialize<EmailSolicitacao>(messageString);
                 await _emailCreator.SendEmail(emailSolicitacao.Titulo, emailSolicitacao.Mensagem, emailSolicitacao.Destinatarios);
-                await _queueClient.CompleteAsync(message.SystemProperties.LockToken);
+                await receiver.CompleteMessageAsync(message);
+                scope.Complete();
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError($"Ocorreu um erro ao enviar e-mail: {ex.Message}", ex);
+
+                throw;
             }
 
         }
-        private async Task ExceptionHandler(ExceptionReceivedEventArgs exceptionReceivedEventArgs)
-        {
-            _logger.LogError($"Ocorreu um erro ao tentar consumir mensagem da fila de e-mail: {exceptionReceivedEventArgs.Exception.Message}", exceptionReceivedEventArgs.Exception);
-            await Task.CompletedTask;
-        }
-
     }
 }
