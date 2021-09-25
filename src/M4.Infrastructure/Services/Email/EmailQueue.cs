@@ -21,7 +21,7 @@ namespace M4.Infrastructure.Services.Email
         private readonly IEmailCreator _emailCreator;
         private readonly ILogger<EmailQueue> _logger;
         private readonly IConfiguration _configuration;
-        private readonly ServiceBusClient _serviceBusClient;
+        private ServiceBusClient _serviceBusClient;
 
 
         public EmailQueue(IEmailCreator emailCreator, ILogger<EmailQueue> logger, IConfiguration configuration)
@@ -29,6 +29,11 @@ namespace M4.Infrastructure.Services.Email
             _emailCreator = emailCreator;
             _logger = logger;
             _configuration = configuration;
+            
+        }
+
+        private void GetServiceBusClient()
+        {
             var cs = _configuration.GetConnectionString("MagicFormulaServiceBus");
             _serviceBusClient = new(cs);
         }
@@ -38,6 +43,7 @@ namespace M4.Infrastructure.Services.Email
             
             try
             {
+                GetServiceBusClient();
                 ServiceBusSender sender = _serviceBusClient.CreateSender(QUEUE_NAME);
                 string emailSolicitacaoJson = JsonSerializer.Serialize(emailSolicitacao);
                 byte[] emailSolicitacaoBytes = Encoding.UTF8.GetBytes(emailSolicitacaoJson);
@@ -56,6 +62,7 @@ namespace M4.Infrastructure.Services.Email
         {
             try
             {
+                GetServiceBusClient();
                 ServiceBusReceiver receiver = _serviceBusClient.CreateReceiver(QUEUE_NAME);
                 ServiceBusReceivedMessage message = await receiver.ReceiveMessageAsync();
                 using TransactionScope scope = new (TransactionScopeAsyncFlowOption.Enabled);
