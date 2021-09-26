@@ -6,6 +6,8 @@ using System;
 using System.Net;
 using System.Net.Mail;
 using System.Threading.Tasks;
+using SendGrid;
+using SendGrid.Helpers.Mail;
 
 namespace M4.Infrastructure.Services.Email
 {
@@ -21,25 +23,19 @@ namespace M4.Infrastructure.Services.Email
         public async Task SendEmail(string subject, string message, string to)
         {
             _logger.LogInformation($"Enviando e-mail para: {to} com assunto: {subject} as: {DateTime.Now}");
-            MailMessage mailMessage = new MailMessage();
-            SmtpClient smtpClient = new SmtpClient();
+
             try
             {
-                MailAddress fromAddress = new MailAddress(_emailConfiguration.From);
-                mailMessage.From = fromAddress;
-                foreach (var item in to.Split(";"))
-                    mailMessage.To.Add(item);
-
-                mailMessage.Subject = $"🧙 Magic4mula - {subject} 🧙";
-                mailMessage.IsBodyHtml = true;
-                mailMessage.Body = string.Format("<h2 style='color:blue;'>{0}</h2>", message);
-                smtpClient.Host = _emailConfiguration.SmtpServer;
-                smtpClient.Port = _emailConfiguration.Port;
-                smtpClient.EnableSsl = true;
-                smtpClient.UseDefaultCredentials = false;
-                smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-                smtpClient.Credentials = new NetworkCredential(_emailConfiguration.UserName, _emailConfiguration.Password);
-                await smtpClient.SendMailAsync(mailMessage);
+                var apiKey = _emailConfiguration.ApiKey;
+                var client = new SendGridClient(apiKey);
+                var from = new EmailAddress(_emailConfiguration.From, "Magic4mula");
+                var subject2 = $"🧙 Magic4mula - {subject} 🧙";
+                var to2 = new EmailAddress(to);
+                var plainTextContent = "teste";
+                var htmlContent = string.Format("<h2 style='color:blue;'>{0}</h2>", message);
+                var msg = MailHelper.CreateSingleEmail(from, to2, subject2, plainTextContent, htmlContent);
+                var response = await client.SendEmailAsync(msg);
+                _logger.LogInformation(response.ToString());
             }
             catch (Exception ex)
             {
