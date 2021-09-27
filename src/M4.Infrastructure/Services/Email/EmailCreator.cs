@@ -3,22 +3,23 @@ using M4.Infrastructure.Configurations.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Net;
-using System.Net.Mail;
 using System.Threading.Tasks;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using Microsoft.Extensions.Configuration;
 
 namespace M4.Infrastructure.Services.Email
 {
     public class EmailCreator : IEmailCreator
     {
+        private readonly IConfiguration _configuration;
         private readonly EmailConfiguration _emailConfiguration;
         private readonly ILogger<EmailCreator> _logger;
-        public EmailCreator(IOptions<EmailConfiguration> settings, ILogger<EmailCreator> logger)
+        public EmailCreator(IOptions<EmailConfiguration> settings, ILogger<EmailCreator> logger, IConfiguration configuration)
         {
             _emailConfiguration = settings.Value;
             _logger = logger;
+            _configuration = configuration;
         }
         public async Task SendEmail(string subject, string message, string to)
         {
@@ -26,16 +27,14 @@ namespace M4.Infrastructure.Services.Email
 
             try
             {
-                var apiKey = _emailConfiguration.ApiKey;
-                var client = new SendGridClient(apiKey);
-                var from = new EmailAddress(_emailConfiguration.From, "Magic4mula");
-                var subject2 = $"🧙 Magic4mula - {subject} 🧙";
-                var to2 = new EmailAddress(to);
-                var plainTextContent = "teste";
-                var htmlContent = string.Format("<h2 style='color:blue;'>{0}</h2>", message);
-                var msg = MailHelper.CreateSingleEmail(from, to2, subject2, plainTextContent, htmlContent);
-                var response = await client.SendEmailAsync(msg);
-                _logger.LogInformation(response.ToString());
+                string apiKey = _configuration.GetConnectionString("SendGrid");
+                SendGridClient client = new (apiKey);
+                EmailAddress from = new (_emailConfiguration.From, _emailConfiguration.UserName);
+                string subjectEmail = $"🧙 Magic4mula - {subject} 🧙";
+                EmailAddress toEmail = new (to);
+                string htmlContent = string.Format("<h2 style='color:blue;'>{0}</h2>", message);
+                SendGridMessage msg = MailHelper.CreateSingleEmail(from, toEmail, subjectEmail, string.Empty, htmlContent);
+                Response response = await client.SendEmailAsync(msg);
             }
             catch (Exception ex)
             {
