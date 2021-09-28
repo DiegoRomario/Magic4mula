@@ -14,6 +14,9 @@ using M4.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using M4.Domain.Core;
 using System.Text.Json.Serialization;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
+using System.Collections.Generic;
 
 namespace M4.WebApi
 {
@@ -27,7 +30,7 @@ namespace M4.WebApi
         }
 
         public virtual void ConfigureServices(IServiceCollection services)
-        { 
+        {
 
             services.AddAzureAppConfiguration();
             services.AddCors(options => options.AddPolicy("ApiCorsPolicy", build =>
@@ -65,12 +68,21 @@ namespace M4.WebApi
 
         public virtual void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (!env.IsEnvironment("Testing"))            
+            if (!env.IsEnvironment("Testing"))
                 app.UseAzureAppConfiguration();
-            
-            if (env.IsDevelopment())           
+
+            if (env.IsDevelopment())
                 app.UseDeveloperExceptionPage();
-          
+
+            var defaultDateCulture = "pt-BR";
+            CultureInfo defaultCultureInfo = new (defaultDateCulture);
+            app.UseRequestLocalization(new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture(defaultCultureInfo),
+                SupportedCultures = new List<CultureInfo>{defaultCultureInfo},
+                SupportedUICultures = new List<CultureInfo>{defaultCultureInfo}
+            });
+
             app.UseCors("ApiCorsPolicy");
             app.UseHttpsRedirection();
             app.UseAuthentication();
