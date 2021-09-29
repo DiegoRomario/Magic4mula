@@ -35,6 +35,7 @@ namespace M4.Infrastructure.Services.Email
                 string htmlContent = string.Format("<h2 style='color:blue;'>{0}</h2>", message);
                 SendGridMessage msg = MailHelper.CreateSingleEmail(from, toEmail, subjectEmail, string.Empty, htmlContent);
                 Response response = await client.SendEmailAsync(msg);
+                _logger.LogDebug($"Houve {(response.IsSuccessStatusCode ? "Sucesso" : "Falha")} no envio do e-mail. Status code: {response.StatusCode}");
             }
             catch (Exception ex)
             {

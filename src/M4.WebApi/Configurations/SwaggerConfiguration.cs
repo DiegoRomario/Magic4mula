@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System;
@@ -7,6 +8,8 @@ namespace M4.WebApi.Configurations
 {
     public static class SwaggerConfiguration
     {
+        private const string BASE_DOC_URL = "documentacao";
+
         public static IServiceCollection AddSwaggerConfiguration(this IServiceCollection services)
         {
 
@@ -52,14 +55,18 @@ namespace M4.WebApi.Configurations
         {
             app.UseSwagger(options =>
             {
-                options.RouteTemplate = "documentacao/{documentName}/documentacao.json";
+                options.RouteTemplate = BASE_DOC_URL + "/{documentName}/" + BASE_DOC_URL + ".json";
             });
             app.UseSwaggerUI(
                 options =>
                 {
-                    options.RoutePrefix = "documentacao";
-                    options.SwaggerEndpoint($"/documentacao/v1/documentacao.json", "v1");
+                    options.RoutePrefix = BASE_DOC_URL;
+                    options.SwaggerEndpoint($"/{BASE_DOC_URL}/v1/{BASE_DOC_URL}.json", "v1");
                 });
+
+            RewriteOptions option = new();
+            option.AddRedirect("^$", BASE_DOC_URL);
+            app.UseRewriter(option);
 
             return app;
         }
