@@ -2,14 +2,11 @@
 using M4.Domain.Core;
 using M4.Domain.Entities;
 using M4.Domain.Interfaces;
-using Microsoft.Azure.ServiceBus;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Transactions;
 
@@ -29,7 +26,7 @@ namespace M4.Infrastructure.Services.Email
             _emailCreator = emailCreator;
             _logger = logger;
             _configuration = configuration;
-            
+
         }
 
         private void GetServiceBusClient()
@@ -40,7 +37,7 @@ namespace M4.Infrastructure.Services.Email
 
         public async Task EnqueueEmailAsync(EmailSolicitacao emailSolicitacao)
         {
-            
+
             try
             {
                 GetServiceBusClient();
@@ -51,26 +48,21 @@ namespace M4.Infrastructure.Services.Email
                 _logger.LogInformation($"Enfileirando E-mail Id: {emailSolicitacao.Id}");
                 await sender.SendMessageAsync(message);
             }
-            catch 
+            catch
             {
                 throw;
             }
 
         }
 
-       public async Task DequeueEmailAsync()
+        public async Task DequeueEmailAsync()
         {
             try
             {
                 GetServiceBusClient();
                 ServiceBusReceiver receiver = _serviceBusClient.CreateReceiver(QUEUE_NAME);
                 ServiceBusReceivedMessage message = await receiver.ReceiveMessageAsync();
-                using TransactionScope scope = new (TransactionScopeAsyncFlowOption.Enabled);
-                var messageString = Encoding.UTF8.GetString(message.Body);
-                EmailSolicitacao emailSolicitacao = JsonSerializer.Deserialize<EmailSolicitacao>(messageString);
-                await _emailCreator.SendEmail(emailSolicitacao.Titulo, emailSolicitacao.Mensagem, emailSolicitacao.Destinatarios);
-                await receiver.CompleteMessageAsync(message);
-                scope.Complete();
+                if (message is not null) await ReceiveMessage(receiver, message);                
             }
             catch
             {
@@ -78,6 +70,16 @@ namespace M4.Infrastructure.Services.Email
                 throw;
             }
 
+        }
+
+        private async Task ReceiveMessage(ServiceBusReceiver receiver, ServiceBusReceivedMessage message)
+        {
+            TransactionScope scope = new(TransactionScopeAsyncFlowOption.Enabled);
+            var messageString = Encoding.UTF8.GetString(message.Body);
+            EmailSolicitacao emailSolicitacao = JsonSerializer.Deserialize<EmailSolicitacao>(messageString);
+            await _emailCreator.SendEmail(emailSolicitacao.Titulo, emailSolicitacao.Mensagem, emailSolicitacao.Destinatarios);
+            await receiver.CompleteMessageAsync(message);
+            scope.Complete();
         }
     }
 }
