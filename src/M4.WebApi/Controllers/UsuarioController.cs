@@ -1,5 +1,6 @@
 ﻿using M4.Domain.Entities;
 using M4.Domain.Interfaces;
+using Extensions = M4.Domain.Extensions;
 using M4.Infrastructure.Configurations.Models;
 using M4.Infrastructure.Data.Models;
 using M4.Infrastructure.Models;
@@ -69,7 +70,7 @@ namespace M4.WebApi.Controllers
                 {
                     string token = await _userManager.GenerateEmailConfirmationTokenAsync(usuario);
                     token = HttpUtility.UrlEncode(token);
-                    string encodedEmail = EncodeEmail(usuario.Email);
+                    string encodedEmail = Extensions.StringExtensions.StringToUrlEncoded(usuario.Email);
                     string urlConfirmacao = string.Format(_uRLs.ConfirmacaoEmail, encodedEmail, token);
                     EmailSolicitacao message = new("Confirmação de e-mail", urlConfirmacao, usuario.Name, usuario.Email);
                     await _emailQueue.EnqueueEmailAsync(message);
@@ -96,7 +97,7 @@ namespace M4.WebApi.Controllers
         [HttpPost("confirmar-email")]
         public async Task<ActionResult> ConfirmarEmail(UsuarioConfirmacaoEmail confirmacao)
         {
-            string decodedEmail = DecodeEmail(confirmacao.Email);
+            string decodedEmail = Extensions.StringExtensions.UrlEncodedToString(confirmacao.Email);
             UserIdentity usuario = await _userManager.FindByEmailAsync(decodedEmail);
             if (usuario == null) return BaseResponse("Usuário não encontrado", statusCodeErro: HttpStatusCode.NotFound);
 
@@ -231,20 +232,6 @@ namespace M4.WebApi.Controllers
                 Nome = user.Name,
                 Claims = claims.Select(c => new UsuarioClaim { Type = c.Type, Value = c.Value })
             };
-        }
-        private static string EncodeEmail(string email)
-        {
-            byte[] textoAsBytes = Encoding.ASCII.GetBytes(email);
-            string base64Email = Convert.ToBase64String(textoAsBytes);
-            string encodedEmail = HttpUtility.UrlEncode(base64Email);
-            return encodedEmail;
-        }
-        private static string DecodeEmail(string email)
-        {
-            byte[] dadosAsBytes = Convert.FromBase64String(email);
-            string base64Email = Encoding.ASCII.GetString(dadosAsBytes);
-            string decodedEmail = HttpUtility.UrlDecode(base64Email);
-            return decodedEmail;
         }
     }
 }

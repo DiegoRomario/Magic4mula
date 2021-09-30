@@ -1,5 +1,5 @@
 ﻿using HtmlAgilityPack;
-using M4.Domain.Entensions;
+using M4.Domain.Extensions;
 using M4.Domain.Entities;
 using System.Collections.Generic;
 using System.Linq;
