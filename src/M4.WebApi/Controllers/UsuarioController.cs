@@ -1,5 +1,6 @@
 ﻿using M4.Domain.Entities;
 using M4.Domain.Interfaces;
+using Extensions = M4.Domain.Extensions;
 using M4.Infrastructure.Configurations.Models;
 using M4.Infrastructure.Data.Models;
 using M4.Infrastructure.Models;
@@ -69,8 +70,9 @@ namespace M4.WebApi.Controllers
                 {
                     string token = await _userManager.GenerateEmailConfirmationTokenAsync(usuario);
                     token = HttpUtility.UrlEncode(token);
-                    string urlConfirmacao = string.Format(_uRLs.ConfirmacaoEmail, usuario.Email, token);
-                    EmailSolicitacao message = new EmailSolicitacao("Confirmação de e-mail", urlConfirmacao, usuario.Email);
+                    string encodedEmail = Extensions.StringExtensions.StringToUrlEncoded(usuario.Email);
+                    string urlConfirmacao = string.Format(_uRLs.ConfirmacaoEmail, encodedEmail, token);
+                    EmailSolicitacao message = new("Confirmação de e-mail", urlConfirmacao, usuario.Name, usuario.Email);
                     await _emailQueue.EnqueueEmailAsync(message);
                     return BaseResponse("Usuário cadastrado com sucesso! Um e-mail será enviado para confirmação do cadastro.");
                 }
@@ -89,10 +91,14 @@ namespace M4.WebApi.Controllers
 
             return BaseResponse();
         }
+
+
+
         [HttpPost("confirmar-email")]
         public async Task<ActionResult> ConfirmarEmail(UsuarioConfirmacaoEmail confirmacao)
         {
-            UserIdentity usuario = await _userManager.FindByEmailAsync(confirmacao.Email);
+            string decodedEmail = Extensions.StringExtensions.UrlEncodedToString(confirmacao.Email);
+            UserIdentity usuario = await _userManager.FindByEmailAsync(decodedEmail);
             if (usuario == null) return BaseResponse("Usuário não encontrado", statusCodeErro: HttpStatusCode.NotFound);
 
             var result = await _userManager.ConfirmEmailAsync(usuario, confirmacao.Token);
@@ -104,6 +110,8 @@ namespace M4.WebApi.Controllers
 
             return BaseResponse();
         }
+
+
 
         [HttpPost("entrar")]
         public async Task<ActionResult> Entrar(UsuarioLogin usuarioLogin)
@@ -138,7 +146,7 @@ namespace M4.WebApi.Controllers
                 string token = await _userManager.GeneratePasswordResetTokenAsync(usuario);
                 token = HttpUtility.UrlEncode(token);
                 string urlConfirmacao = string.Format(_uRLs.CadastroNovaSenha, usuario.Email, token);
-                EmailSolicitacao message = new EmailSolicitacao("Redefinição de senha", urlConfirmacao, usuario.Email);
+                EmailSolicitacao message = new ("Redefinição de senha", urlConfirmacao, usuario.Name, usuario.Email);
                 await _emailQueue.EnqueueEmailAsync(message);
                 return BaseResponse("Um e-mail com link para redefinição de senha será enviado.");
             }

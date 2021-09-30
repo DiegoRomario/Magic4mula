@@ -26,7 +26,6 @@ namespace M4.Infrastructure.Services.Email
             _emailCreator = emailCreator;
             _logger = logger;
             _configuration = configuration;
-
         }
 
         private void GetServiceBusClient()
@@ -62,24 +61,22 @@ namespace M4.Infrastructure.Services.Email
                 GetServiceBusClient();
                 ServiceBusReceiver receiver = _serviceBusClient.CreateReceiver(QUEUE_NAME);
                 ServiceBusReceivedMessage message = await receiver.ReceiveMessageAsync();
-                if (message is not null) await ReceiveMessage(receiver, message);                
+                if (message is not null)
+                {
+                    using TransactionScope scope = new(TransactionScopeAsyncFlowOption.Enabled);
+                    var messageString = Encoding.UTF8.GetString(message.Body);
+                    EmailSolicitacao emailSolicitacao = JsonSerializer.Deserialize<EmailSolicitacao>(messageString);
+                    await _emailCreator.SendEmail(emailSolicitacao.Titulo, emailSolicitacao.Mensagem, emailSolicitacao.NomeDestinatario, emailSolicitacao.EmailDestinatario);
+                    await receiver.CompleteMessageAsync(message);
+                    scope.Complete();
+                }
+                else await Task.CompletedTask;
             }
             catch
             {
-
                 throw;
             }
 
-        }
-
-        private async Task ReceiveMessage(ServiceBusReceiver receiver, ServiceBusReceivedMessage message)
-        {
-            TransactionScope scope = new(TransactionScopeAsyncFlowOption.Enabled);
-            var messageString = Encoding.UTF8.GetString(message.Body);
-            EmailSolicitacao emailSolicitacao = JsonSerializer.Deserialize<EmailSolicitacao>(messageString);
-            await _emailCreator.SendEmail(emailSolicitacao.Titulo, emailSolicitacao.Mensagem, emailSolicitacao.Destinatarios);
-            await receiver.CompleteMessageAsync(message);
-            scope.Complete();
         }
     }
 }

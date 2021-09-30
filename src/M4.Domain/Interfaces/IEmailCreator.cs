@@ -4,6 +4,6 @@ namespace M4.Domain.Core
 {
     public interface IEmailCreator
     {
-        Task SendEmail(string subject, string message, string to);
+        Task SendEmail(string subject, string message, string toName, string toEmail);
     }
 }
