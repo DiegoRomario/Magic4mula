@@ -21,9 +21,9 @@ namespace M4.Infrastructure.Services.Email
             _logger = logger;
             _configuration = configuration;
         }
-        public async Task SendEmail(string subject, string message, string to)
+        public async Task SendEmail(string subject, string message, string toName, string toEmail)
         {
-            _logger.LogInformation($"Enviando e-mail para: {to} com assunto: {subject} as: {DateTime.Now}");
+            _logger.LogInformation($"Enviando e-mail para: {toName} - {toEmail} com assunto: {subject} as: {DateTime.Now}");
 
             try
             {
@@ -31,11 +31,12 @@ namespace M4.Infrastructure.Services.Email
                 SendGridClient client = new (apiKey);
                 EmailAddress from = new (_emailConfiguration.From, _emailConfiguration.UserName);
                 string subjectEmail = $"🧙 Magic4mula - {subject} 🧙";
-                EmailAddress toEmail = new (to);
-                string htmlContent = string.Format("<h2 style='color:blue;'>{0}</h2>", message);
-                SendGridMessage msg = MailHelper.CreateSingleEmail(from, toEmail, subjectEmail, string.Empty, htmlContent);
+                EmailAddress to = new (toEmail);
+                string template = _configuration["Templates:ConfirmacaoEmail"];
+                string htmlContent = template.Replace("{link}", message).Replace("{nome}", toName);
+                SendGridMessage msg = MailHelper.CreateSingleEmail(from, to, subjectEmail, string.Empty, htmlContent);
                 Response response = await client.SendEmailAsync(msg);
-                _logger.LogDebug($"Houve {(response.IsSuccessStatusCode ? "Sucesso" : "Falha")} no envio do e-mail. Status code: {response.StatusCode}");
+                _logger.LogInformation($"Houve {(response.IsSuccessStatusCode ? "Sucesso" : "Falha")} no envio do e-mail. Status code: {response.StatusCode}");
             }
             catch (Exception ex)
             {

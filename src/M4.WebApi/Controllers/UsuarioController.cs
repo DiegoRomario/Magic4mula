@@ -70,7 +70,7 @@ namespace M4.WebApi.Controllers
                     string token = await _userManager.GenerateEmailConfirmationTokenAsync(usuario);
                     token = HttpUtility.UrlEncode(token);
                     string urlConfirmacao = string.Format(_uRLs.ConfirmacaoEmail, usuario.Email, token);
-                    EmailSolicitacao message = new EmailSolicitacao("Confirmação de e-mail", urlConfirmacao, usuario.Email);
+                    EmailSolicitacao message = new ("Confirmação de e-mail", urlConfirmacao, usuario.Name, usuario.Email);
                     await _emailQueue.EnqueueEmailAsync(message);
                     return BaseResponse("Usuário cadastrado com sucesso! Um e-mail será enviado para confirmação do cadastro.");
                 }
@@ -138,7 +138,7 @@ namespace M4.WebApi.Controllers
                 string token = await _userManager.GeneratePasswordResetTokenAsync(usuario);
                 token = HttpUtility.UrlEncode(token);
                 string urlConfirmacao = string.Format(_uRLs.CadastroNovaSenha, usuario.Email, token);
-                EmailSolicitacao message = new EmailSolicitacao("Redefinição de senha", urlConfirmacao, usuario.Email);
+                EmailSolicitacao message = new ("Redefinição de senha", urlConfirmacao, usuario.Name, usuario.Email);
                 await _emailQueue.EnqueueEmailAsync(message);
                 return BaseResponse("Um e-mail com link para redefinição de senha será enviado.");
             }

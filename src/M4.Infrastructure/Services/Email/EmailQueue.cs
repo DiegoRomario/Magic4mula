@@ -77,7 +77,7 @@ namespace M4.Infrastructure.Services.Email
             TransactionScope scope = new(TransactionScopeAsyncFlowOption.Enabled);
             var messageString = Encoding.UTF8.GetString(message.Body);
             EmailSolicitacao emailSolicitacao = JsonSerializer.Deserialize<EmailSolicitacao>(messageString);
-            await _emailCreator.SendEmail(emailSolicitacao.Titulo, emailSolicitacao.Mensagem, emailSolicitacao.Destinatarios);
+            await _emailCreator.SendEmail(emailSolicitacao.Titulo, emailSolicitacao.Mensagem, emailSolicitacao.NomeDestinatario, emailSolicitacao.EmailDestinatario);
             await receiver.CompleteMessageAsync(message);
             scope.Complete();
         }
