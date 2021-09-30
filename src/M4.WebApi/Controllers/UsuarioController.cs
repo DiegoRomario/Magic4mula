@@ -69,8 +69,9 @@ namespace M4.WebApi.Controllers
                 {
                     string token = await _userManager.GenerateEmailConfirmationTokenAsync(usuario);
                     token = HttpUtility.UrlEncode(token);
-                    string urlConfirmacao = string.Format(_uRLs.ConfirmacaoEmail, usuario.Email, token);
-                    EmailSolicitacao message = new ("Confirmação de e-mail", urlConfirmacao, usuario.Name, usuario.Email);
+                    string encodedEmail = EncodeEmail(usuario.Email);
+                    string urlConfirmacao = string.Format(_uRLs.ConfirmacaoEmail, encodedEmail, token);
+                    EmailSolicitacao message = new("Confirmação de e-mail", urlConfirmacao, usuario.Name, usuario.Email);
                     await _emailQueue.EnqueueEmailAsync(message);
                     return BaseResponse("Usuário cadastrado com sucesso! Um e-mail será enviado para confirmação do cadastro.");
                 }
@@ -89,10 +90,14 @@ namespace M4.WebApi.Controllers
 
             return BaseResponse();
         }
+
+
+
         [HttpPost("confirmar-email")]
         public async Task<ActionResult> ConfirmarEmail(UsuarioConfirmacaoEmail confirmacao)
         {
-            UserIdentity usuario = await _userManager.FindByEmailAsync(confirmacao.Email);
+            string decodedEmail = DecodeEmail(confirmacao.Email);
+            UserIdentity usuario = await _userManager.FindByEmailAsync(decodedEmail);
             if (usuario == null) return BaseResponse("Usuário não encontrado", statusCodeErro: HttpStatusCode.NotFound);
 
             var result = await _userManager.ConfirmEmailAsync(usuario, confirmacao.Token);
@@ -104,6 +109,8 @@ namespace M4.WebApi.Controllers
 
             return BaseResponse();
         }
+
+
 
         [HttpPost("entrar")]
         public async Task<ActionResult> Entrar(UsuarioLogin usuarioLogin)
@@ -224,6 +231,20 @@ namespace M4.WebApi.Controllers
                 Nome = user.Name,
                 Claims = claims.Select(c => new UsuarioClaim { Type = c.Type, Value = c.Value })
             };
+        }
+        private static string EncodeEmail(string email)
+        {
+            byte[] textoAsBytes = Encoding.ASCII.GetBytes(email);
+            string base64Email = Convert.ToBase64String(textoAsBytes);
+            string encodedEmail = HttpUtility.UrlEncode(base64Email);
+            return encodedEmail;
+        }
+        private static string DecodeEmail(string email)
+        {
+            byte[] dadosAsBytes = Convert.FromBase64String(email);
+            string base64Email = Encoding.ASCII.GetString(dadosAsBytes);
+            string decodedEmail = HttpUtility.UrlDecode(base64Email);
+            return decodedEmail;
         }
     }
 }
