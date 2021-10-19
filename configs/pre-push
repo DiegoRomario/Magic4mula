@@ -1,0 +1,58 @@
+#!/bin/bash
+protected_branch='demo-branch'
+current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+RED='\033[0;31m'
+GREEN='\033[1;32m'
+CYAN='\033[0;36m'
+NOCOLOR='\033[0m'
+
+
+#if [[ $current_branch = $protected_branch ]] ; then # remove this comment if you want to run it to a protected_branch
+    echo -e "${CYAN}😴 - Running pre-push check...${NOCOLOR}"    
+
+	echo -e "${CYAN}🔧 - Building the projects...${NOCOLOR}"
+    dotnet build
+
+    # $? is a shell variable which stores the return code from what we just ran
+    rc=$?
+    if [[ $rc != 0 ]] ; then
+        echo -e "${RED}☠️  - Failed to build the project, please fix this and push again${NOCOLOR}"
+        echo ""
+        exit $rc
+    fi
+	
+	echo -e "${CYAN}⚠️  - Checking warnings...${NOCOLOR}"
+	#The --no-incremental flag makes sure that the build runs even when none of the files have changed.
+	#The --warnAsError flag makes treat all warnings as errors
+    dotnet build --no-incremental --warnAsError
+
+    rc=$?
+    if [[ $rc != 0 ]] ; then
+        echo -e "${RED}☠️  - There are warnings in the project, please fix this and push again${NOCOLOR}"
+        echo ""
+        exit $rc
+    fi
+
+    # navigate to the test project to run the tests
+    cd tests/M4.WebApi.Tests
+
+    echo -e "${CYAN}🧪 - Running tests...${NOCOLOR}"
+    echo ""
+	dotnet test
+
+    rc=$?
+    if [[ $rc != 0 ]] ; then
+        # A non-zero return code means an error occurred, so tell the user and exit
+        echo -e "${RED}☠️  - Tests failed, please fix and push again${NOCOLOR}"
+        echo ""
+        exit $rc
+    fi
+	
+    # Everything went well so we can exit with a zero
+    echo -e "${GREEN}✔️  - Pre push check passed!${NOCOLOR}"
+    echo ""
+#fi
+
+exit 0
+
+
